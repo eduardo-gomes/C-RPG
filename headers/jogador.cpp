@@ -28,13 +28,21 @@ jogador::~jogador(){
 }
 
 void jogador::atack_round(){
-	std::cout << "atack 1 or 2 ?: ";
+	std::cout << "atack 1 :" << aramas[0]->get_full_name() << " or 2 : " << aramas[1]->get_full_name() << " ?: ";
 	std::cout.flush();
 	std::string atack;
 	std::cin >> atack;
-	int atack_i = stoi(atack)-1;
+	int atack_i;
+	try{
+	atack_i = stoi(atack) - 1;
+	}
+	catch(std::invalid_argument& e){
+		atack_i = 0;
+		cout << "invalid argument" << endl;
+	}
 	if(atack_i > 1 || atack_i < 0) atack_i = 0;
-	std::cout << "you selected: " << atack_i << " : " << aramas[atack_i]->get_full_name() << std::endl;
+	std::cout << "you selected: " << atack_i + 1 << " : " << aramas[atack_i]->get_full_name() << std::endl;
+	std::cout << "damage: " << aramas[atack_i]->get_damage() << " precision : " << aramas[atack_i]->get_atack_precision() << endl;
 }
 
 std::string jogador::get_name() {

@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <deque>
+#include <cmath>
 #include <map>
 //#include "weapon.hpp"
 #include "weapon.cpp"

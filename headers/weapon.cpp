@@ -17,6 +17,7 @@ namespace wand_{
 weapon::weapon(){
 	material = 0;
 	level = 0;
+	xp = 100;
 	damage_df = 3;
 	damage_buff = 0;
 }
@@ -24,7 +25,7 @@ weapon::~weapon() {}
 int weapon::get_tipo(){
 	return 0;
 }
-std::string* weapon::get_material_name(){
+const std::string* weapon::get_material_name(){
 	return &weapon_T::materials[material];
 }
 std::string weapon::get_full_name(){
@@ -36,16 +37,43 @@ std::string weapon::get_full_name(){
 std::string weapon::get_tipo_st(){
 	return "undefined weapon with damage 3";
 }
-int weapon::material_upgrade_cost(){}///////////////////////////////////////////////////////////////////////TODO
-void weapon::material_upgrade(){}
+int weapon::material_upgrade_cost(){///////////////////////////////////////////////////////////////////////TODO
+	if (material >= weapon_T::material_max)
+		return -1;
+	return 326 * (int)ceil(pow(material, 4)) - 200 * material + 10;
+}
+void weapon::material_upgrade(){
+	if(material_upgrade_cost() <= xp && material < weapon_T::material_max){
+		xp -= material_upgrade_cost();
+		material ++;
+	}
+}
 int weapon::level_upgrade_cost(){}
 void weapon::level_upgrade(){}
-int weapon::get_atack_precision(){}
-void weapon::add_precision_buff(){}
-int weapon::get_damage(){}
-void weapon::buff_end(){}
-int weapon::get_damage_buff(){}
-void weapon::add_damage_buff(int) {} ///////////////////////////////////////////////////////////////////////
+int weapon::get_atack_precision(){
+	return precision + precision_buff > 1000 ? 1000 : precision + precision_buff;
+}
+void weapon::add_precision_buff(int add){
+	precision_buff += add;
+}
+int weapon::get_damage(){
+	return damage_df + damage_buff;
+}
+void weapon::buff_end(){
+	precision_buff = damage_buff = 0;
+}
+int weapon::get_damage_buff(){
+	return damage_buff;
+}
+void weapon::add_damage_buff(int add){
+	damage_buff += add;
+}
+int weapon::get_xp(){
+	return xp;
+}
+void weapon::add_xp(int add){
+	xp += add;
+}
 
 bow::bow(){
 	damage_df = bow_::damage_df;

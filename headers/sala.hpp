@@ -5,7 +5,6 @@ class sala{
 		std::string* name;
 		std::deque<personagem *> dentro;
 	public:
-		friend class personagem;
 		void round_loop();
 		void add_personagem(personagem *);
 		sala(std::string &);

@@ -16,14 +16,16 @@ class loot{
 
 class personagem : public loot{
 	protected:
-		int xp, level, df_life, df_damage, df_critical, df_actionpoints, df_magicalpoints;
+		int colectedxp, xp, level, df_life, df_damage, df_critical, df_actionpoints, df_magicalpoints;
 		weapon *aramas[2];
 	public:
 		void arma_set(weapon *, int);
+		weapon* get_arma(int);
 		int get_level();
 		int get_all_xp();
 		int xp_to_next_level();
-		void add_xp();//try lv up
+		void add_xp(int);//try lv up
+		void try_level_up();
 		void recieve_damage_from(int, std::string);
 		personagem();
 		virtual ~personagem();
