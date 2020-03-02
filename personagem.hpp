@@ -17,8 +17,9 @@ class loot{
 class personagem : public loot{
 	protected:
 		int xp, level, df_life, df_damage, df_critical, df_actionpoints, df_magicalpoints;
-		weapon a1, a2;
+		weapon *aramas[2];
 	public:
+		void arma_set(weapon *, int);
 		int get_level();
 		int get_all_xp();
 		int xp_to_next_level();

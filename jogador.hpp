@@ -10,5 +10,5 @@ class jogador : public personagem{
 		void create_loot();
 		void atack_round();
 		~jogador();
-		jogador(std::string);
+		jogador(std::string &);
 };

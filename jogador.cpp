@@ -1,10 +1,22 @@
 #include "jogador.hpp"
 
-jogador::jogador(std::string n_name){
-	std::cout << "Insert name: ";
-	std::cout.flush();
-	std::cin >> name;
-	std::cout << name << std::endl;
+/*
+Player classe	atCorpo	atArq	at_Magi	
+Arqueiro		+20%	+50%	+0%		
+guerreiro		+50%	+0%		+0%		
+mago			+0%		+10%	+100%	
+				dfCorpo	dfArq	df_Magi	
+Arqueiro		+20%	+40%	+0%		
+guerreiro		+50%	+0%		+0%		
+mago			+10%	+10%	+50%	
+
+materiais = [papel, madeira, pedra, aluminio, ferro, rubi, diamante, titanio, materia negra]
+
+
+*/
+
+jogador::jogador(std::string &stname){
+	name = stname;
 }
 
 jogador::~jogador(){
@@ -16,7 +28,9 @@ void jogador::atack_round(){
 	std::cout.flush();
 	std::string atack;
 	std::cin >> atack;
-	std::cout << "you selected: " << atack << std::endl;
+	int atack_i = stoi(atack)-1;
+	if(atack_i > 1 || atack_i < 0) atack_i = 0;
+	std::cout << "you selected: " << atack_i << " : " << aramas[atack_i]->get_full_name() << std::endl;
 }
 
 std::string jogador::get_name() {
