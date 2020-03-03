@@ -4,15 +4,15 @@ using namespace std;
 namespace bow_{
 	const int damage_df = 7;
 	const int precision = 950;
-};
+}
 namespace sword_{
 	const int damage_df = 13;
 	const int precision = 980;
-};
+}
 namespace wand_{
 	const int damage_df = 10;
 	const int precision = 993;
-};
+}
 
 weapon::weapon(){
 	material = 0;
@@ -48,7 +48,7 @@ void weapon::material_upgrade(){
 		material ++;
 	}
 }
-int weapon::level_upgrade_cost(){}
+int weapon::level_upgrade_cost(){return 0;}////MSVC
 void weapon::level_upgrade(){}
 int weapon::get_atack_precision(){
 	return precision + precision_buff > 1000 ? 1000 : precision + precision_buff;

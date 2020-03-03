@@ -20,7 +20,8 @@ jogador::jogador(std::string &stname){
 	name = stname;
 }
 jogador::jogador(){
-	sk_life = sk_damage = sk_critcal = sk_actionpoints = sk_magicalpoints = money = 0;
+	sk_life = sk_damage = sk_critcal = sk_actionpoints = sk_magicalpoints = 0;
+	money = 0;
 }
 
 jogador::~jogador(){

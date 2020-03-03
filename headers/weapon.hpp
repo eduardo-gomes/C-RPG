@@ -5,7 +5,7 @@ namespace weapon_T{
 	const int WAND = 3;
 	const std::string materials[10] = {"papel", "madeira", "pedra", "aluminio", "ferro", "rubi", "diamante", "titanio", "materia negra", "GINSU 2000"};
 	const int material_max = 9;
-};
+}
 class weapon{
 	protected:
 		int material, level, xp, damage_df, damage_buff, precision, precision_buff;
