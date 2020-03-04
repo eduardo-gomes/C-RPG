@@ -8,14 +8,14 @@ namespace weapon_T{
 }
 class weapon{
 	protected:
-		int material, level, xp, damage_df, damage_buff, precision, precision_buff;
+		int material, /*level,*/ xp, damage_df, damage_buff, precision, precision_buff;
 	public:
 		weapon();
 		virtual ~weapon();
 		int material_upgrade_cost();
 		void material_upgrade();
-		int level_upgrade_cost();
-		void level_upgrade();
+		/*int level_upgrade_cost();
+		void level_upgrade();*/
 		int get_atack_precision();
 		void add_precision_buff(int);
 		int get_damage();
@@ -28,6 +28,8 @@ class weapon{
 		virtual int get_tipo();
 		virtual std::string get_tipo_st();
 		std::string get_full_name();
+		friend void to_json(nlohmann::json &j, const weapon *p);
+		friend void from_json(const nlohmann::json &j, weapon *p);
 };
 
 class bow : public weapon{

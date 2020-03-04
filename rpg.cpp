@@ -1,4 +1,5 @@
 #include "headers/headers.hpp"
+using json = nlohmann::json;
 using namespace std;
 map<string, jogador *> ljogadores;
 
@@ -30,6 +31,8 @@ int main(){
 		//ljogadores[nname]->try_level_up();
 		ljogadores[nname]->add_xp(ljogadores[nname]->xp_to_next_level());
 	}
+	json j = *(ljogadores[nname]);
+	cout << nname << " " << j << endl;
 	for (int i = 0; i < 5; ++i) //////////////////////////////////round sumulation
 		sala1.round_loop();
 }

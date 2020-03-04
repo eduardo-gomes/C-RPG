@@ -5,8 +5,14 @@ loot::loot(){
 	xp = 0;
 	money = 0;
 }
-bool loot::has_loot(){
+bool loot::has_loot() const{
 	return !noloot;
+}
+int loot::get_xp_loot() const{
+	return xp;
+}
+unsigned int loot::get_money_loot() const{
+	return money;
 }
 loot::~loot(){
 	std::cout << "destroing loot" << std::endl;
@@ -36,7 +42,7 @@ weapon* personagem::get_arma(int pos){
 		pos = 0;
 	return armas[pos];
 }
-int personagem::get_all_xp(){
+int personagem::get_all_xp() const{
 	return colectedxp;
 }
 void personagem::add_xp(int add){
@@ -50,7 +56,7 @@ void personagem::try_level_up(){
 		level ++;
 	}
 }
-int personagem::get_level(){
+int personagem::get_level() const{
 	return level;
 }
 int personagem::xp_to_next_level(){
@@ -61,7 +67,7 @@ std::string personagem::get_name() {
 	return "Null_name";
 }
 
-int personagem::get_life(){
+int personagem::get_life() const{
 	return life;
 }
 void personagem::set_life(int nlp){

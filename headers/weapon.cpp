@@ -16,7 +16,7 @@ namespace wand_{
 
 weapon::weapon(){
 	material = 0;
-	level = 0;
+	//level = 0;
 	xp = 100;
 	damage_df = 3;
 	damage_buff = 0;
@@ -48,8 +48,8 @@ void weapon::material_upgrade(){
 		material ++;
 	}
 }
-int weapon::level_upgrade_cost(){return 0;}////MSVC
-void weapon::level_upgrade(){}
+/*int weapon::level_upgrade_cost(){return 0;}////MSVC
+void weapon::level_upgrade(){}*/
 int weapon::get_atack_precision(){
 	return precision + precision_buff > 1000 ? 1000 : precision + precision_buff;
 }
