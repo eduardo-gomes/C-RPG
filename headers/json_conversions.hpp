@@ -41,7 +41,7 @@ void from_json(const json &j, weapon *p){
 void to_json(json& j, const personagem *p){
 	json j_loot, arma0, arma1;
 	to_json(arma0, p->armas[0]);
-	to_json(arma0, p->armas[1]);
+	to_json(arma1, p->armas[1]);
 	to_json(j_loot, (const loot*)p);
 	j = {
 			{"colectedxp", p->get_all_xp()},
@@ -54,8 +54,7 @@ void to_json(json& j, const personagem *p){
 			{"df_actionpoints", p->get_df_actionpoints()},
 			{"df_magicalpoints", p->get_df_magicalpoints()},
 			{"weapon",{
-				{0, },
-				{1, }
+				arma0, arma1
 			}}
 		};
 	j.merge_patch(j_loot);
@@ -71,6 +70,8 @@ void from_json(const json &j, personagem *p){
 	j.at("df_critical").get_to(p->df_critical);
 	j.at("df_actionpoints").get_to(p->df_actionpoints);
 	j.at("df_magicalpoints").get_to(p->df_magicalpoints);
+	from_json(j.at("weapon").at(0), p->armas[0]);
+	from_json(j.at("weapon").at(1), p->armas[1]);
 }
 
 void to_json(json& j, const jogador& p){

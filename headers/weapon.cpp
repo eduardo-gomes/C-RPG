@@ -57,7 +57,7 @@ void weapon::add_precision_buff(int add){
 	precision_buff += add;
 }
 int weapon::get_damage(){
-	return damage_df + damage_buff;
+	return (damage_df + damage_buff) * ((material+1) * (material+1));
 }
 void weapon::buff_end(){
 	precision_buff = damage_buff = 0;

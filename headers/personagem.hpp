@@ -26,7 +26,7 @@ class personagem : public loot{
 		int get_life() const;
 		void set_life(int);
 		void add_life(int);
-		void sub_life(int);
+		int sub_life(int);
 		int get_level() const;
 		int get_all_xp() const;
 		int xp_to_next_level();
@@ -37,7 +37,9 @@ class personagem : public loot{
 		personagem();
 		virtual ~personagem();
 		virtual void atack_round() = 0;
-		virtual std::string get_name();
+		virtual void atack_round(personagem *) = 0;
+		void atack(weapon *arma, personagem *j);
+		virtual std::string get_name() = 0;
 		int get_life_max() const { return life_max; }
 		int get_df_damage() const { return df_damage; }
 		int get_df_critical() const { return df_critical; }

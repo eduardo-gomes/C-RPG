@@ -9,6 +9,7 @@ class jogador : public personagem{
 		std::string get_name();
 		void create_loot();
 		void atack_round();
+		void atack_round(personagem *);
 		~jogador();
 		jogador();
 		jogador(std::string &);

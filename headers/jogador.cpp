@@ -29,6 +29,9 @@ jogador::~jogador(){
 }
 
 void jogador::atack_round(){
+	cout << "nobody selected to atack from " << this->get_name() << endl;
+}
+void jogador::atack_round(personagem *toatk){
 	std::cout << "atack 1 :" << armas[0]->get_full_name() << " or 2 : " << armas[1]->get_full_name() << " ?: ";
 	std::cout.flush();
 	std::string atack;
@@ -44,6 +47,7 @@ void jogador::atack_round(){
 	if(atack_i > 1 || atack_i < 0) atack_i = 0;
 	std::cout << "you selected: " << atack_i + 1 << " : " << armas[atack_i]->get_full_name() << std::endl;
 	std::cout << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << endl;
+	this->atack(armas[atack_i], toatk);
 }
 
 std::string jogador::get_name() {

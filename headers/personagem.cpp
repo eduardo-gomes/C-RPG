@@ -15,7 +15,7 @@ unsigned int loot::get_money_loot() const{
 	return money;
 }
 loot::~loot(){
-	std::cout << "destroing loot" << std::endl;
+	//std::cout << "destroing loot" << std::endl;
 }
 
 
@@ -28,7 +28,7 @@ personagem::personagem(){
 	life = life_max = 20;
 }
 personagem::~personagem(){
-	std::cout << "destroing a1 and a2" << std::endl;
+	//std::cout << "destroing a1 and a2" << std::endl;
 	delete armas[0];
 	delete armas[1];
 }
@@ -85,12 +85,22 @@ void personagem::add_life(int plp){
 		return;
 	life += plp;
 }
-void personagem::sub_life(int slp){
+int personagem::sub_life(int slp){
 	if(life - slp < 0){
+		int olife = life;
 		life = 0;
-		return;
+		return olife;
 	}
 	if(slp < 0)
-		return;
+		return 0;
 	life -= slp;
+	return slp;
+}
+void personagem::atack(weapon *arma, personagem *j){
+	cout << this->get_name() << " atacando : " << j->get_name() << " com : " << arma->get_full_name() << endl;
+	j->recieve_damage_from(arma->get_damage(), this->get_name());
+}
+void personagem::recieve_damage_from(int damage, std::string from){
+	damage = this->sub_life(damage);
+	cout << this->get_name() << " received damage " << damage << " from " << from << endl;
 }
