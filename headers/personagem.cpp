@@ -98,9 +98,11 @@ int personagem::sub_life(int slp){
 }
 void personagem::atack(weapon *arma, personagem *j){
 	cout << this->get_name() << " atacando : " << j->get_name() << " com : " << arma->get_full_name() << endl;
-	j->recieve_damage_from(arma->get_damage(), this->get_name());
+	statadd_given_damage(j->recieve_damage_from(arma->get_damage(), this->get_name()));//atack and stat
 }
-void personagem::recieve_damage_from(int damage, std::string from){
+int personagem::recieve_damage_from(int damage, std::string from){
 	damage = this->sub_life(damage);
 	cout << this->get_name() << " received damage " << damage << " from " << from << endl;
+	statadd_recieved_damage(damage);
+	return damage;
 }

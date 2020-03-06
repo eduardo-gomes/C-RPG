@@ -21,7 +21,7 @@ jogador::jogador(std::string &stname) : jogador(){
 jogador::jogador(){
 	life = life_max = 25;
 	sk_life = sk_damage = sk_critcal = sk_actionpoints = sk_magicalpoints = 0;
-	money = 0;
+	damage_given = damage_taken = enemies_killeds = money = 0;
 }
 
 jogador::~jogador(){
@@ -55,3 +55,10 @@ std::string jogador::get_name() {
 }
 
 void jogador::create_loot() {}
+
+void jogador::statadd_recieved_damage(int rec_dmg){
+	damage_taken += (unsigned int)rec_dmg;
+}
+void jogador::statadd_given_damage(int giv_dmg){
+	damage_given += (unsigned int)giv_dmg;
+}

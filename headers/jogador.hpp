@@ -5,11 +5,15 @@ class jogador : public personagem{
 		std::string name;
 		unsigned int money;
 		int sk_life, sk_damage, sk_critcal, sk_actionpoints, sk_magicalpoints;
+		unsigned int damage_given, damage_taken, enemies_killeds;
 	public:
+		virtual bool is_jogador() { return 1; };
 		std::string get_name();
 		void create_loot();
 		void atack_round();
 		void atack_round(personagem *);
+		void statadd_recieved_damage(int);
+		void statadd_given_damage(int);
 		~jogador();
 		jogador();
 		jogador(std::string &);
@@ -19,6 +23,6 @@ class jogador : public personagem{
 		int get_sk_critcal() const { return sk_critcal; }
 		int get_sk_actionpoints() const { return sk_actionpoints; }
 		int get_sk_magicalpoints() const { return sk_magicalpoints; }
-		friend void from_json(const nlohmann::json &j, jogador &p);
-		friend void to_json(nlohmann::json &j, const jogador &p);
+		friend void from_json(const nlohmann::json &j, jogador *p);
+		friend void to_json(nlohmann::json &j, const jogador *p);
 };

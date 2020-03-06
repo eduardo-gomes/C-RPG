@@ -39,12 +39,12 @@ int main(){
 	cout << nname << " " << j << endl << "jog " << jjog << endl;*/
 	inimigo inimi1;
 	sala1.add_personagem(&inimi1);
-	for (int i = 0; i < 3; ++i) //////////////////////////////////round sumulation
+	//for (int i = 0; i < 3; ++i) //////////////////////////////////round sumulation
 		sala1.round_loop();
 
 	cout << "All players:" << endl;
 	for(auto i : ljogadores){
-		json j = i.second;
+		json j = (jogador *)i.second;
 		cout << i.first << " = " << j << endl;
 	}
 }

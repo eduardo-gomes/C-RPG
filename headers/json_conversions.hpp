@@ -74,27 +74,33 @@ void from_json(const json &j, personagem *p){
 	from_json(j.at("weapon").at(1), p->armas[1]);
 }
 
-void to_json(json& j, const jogador& p){
+void to_json(json& j, const jogador* p){
 	json j_pers;
-	to_json(j_pers, (const personagem*)&p);
+	to_json(j_pers, (const personagem*)p);
 	j = {
-		{"name", p.name},
-		{"money", p.money},
-		{"sk_life", p.sk_life},
-		{"sk_damage", p.sk_damage},
-		{"sk_critcal", p.sk_critcal},
-		{"sk_actionpoints", p.sk_actionpoints},
-		{"sk_magicalpoints", p.sk_magicalpoints}
-	};
+		{"name", p->name},
+		{"money", p->money},
+		{"sk_life", p->sk_life},
+		{"sk_damage", p->sk_damage},
+		{"sk_critcal", p->sk_critcal},
+		{"sk_actionpoints", p->sk_actionpoints},
+		{"sk_magicalpoints", p->sk_magicalpoints},
+		{"damage_given", p->damage_given},
+		{"damage_taken", p->damage_taken},
+		{"enemies_killeds",p->enemies_killeds}
+		};
 	j.merge_patch(j_pers);
 }
-void from_json(const json& j, jogador& p){
-	from_json(j, (personagem*)(&p));
-	j.at("name").get_to(p.name);
-	j.at("money").get_to(p.money);
-	j.at("sk_life").get_to(p.sk_life);
-	j.at("sk_damage").get_to(p.sk_damage);
-	j.at("sk_critcal").get_to(p.sk_critcal);
-	j.at("sk_actionpoints").get_to(p.sk_actionpoints);
-	j.at("sk_magicalpoints").get_to(p.sk_magicalpoints);
+void from_json(const json& j, jogador* p){
+	from_json(j, (personagem*)p);
+	j.at("name").get_to(p->name);
+	j.at("money").get_to(p->money);
+	j.at("sk_life").get_to(p->sk_life);
+	j.at("sk_damage").get_to(p->sk_damage);
+	j.at("sk_critcal").get_to(p->sk_critcal);
+	j.at("sk_actionpoints").get_to(p->sk_actionpoints);
+	j.at("sk_magicalpoints").get_to(p->sk_magicalpoints);
+	j.at("damage_given").get_to(p->damage_given);
+	j.at("damage_taken").get_to(p->damage_taken);
+	j.at("enemies_killeds").get_to(p->enemies_killeds);
 }
