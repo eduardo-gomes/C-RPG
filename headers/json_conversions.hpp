@@ -87,7 +87,10 @@ void to_json(json& j, const jogador* p){
 		{"sk_magicalpoints", p->sk_magicalpoints},
 		{"damage_given", p->damage_given},
 		{"damage_taken", p->damage_taken},
-		{"enemies_killeds",p->enemies_killeds}
+		{"enemies_killeds", p->enemies_killeds},
+		{"damage_given_all", p->damage_given_all},
+		{"damage_taken_all", p->damage_taken_all},
+		{"enemies_killeds_all", p->enemies_killeds_all}
 		};
 	j.merge_patch(j_pers);
 }
@@ -103,4 +106,7 @@ void from_json(const json& j, jogador* p){
 	j.at("damage_given").get_to(p->damage_given);
 	j.at("damage_taken").get_to(p->damage_taken);
 	j.at("enemies_killeds").get_to(p->enemies_killeds);
+	j.at("damage_given_all").get_to(p->damage_given_all);
+	j.at("damage_taken_all").get_to(p->damage_taken_all);
+	j.at("enemies_killeds_all").get_to(p->enemies_killeds_all);
 }

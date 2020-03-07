@@ -6,6 +6,8 @@ loot::loot(){
 	money = 0;
 }
 bool loot::has_loot() const{
+	if(xp || money)
+		return 1;
 	return !noloot;
 }
 int loot::get_xp_loot() const{
@@ -99,6 +101,9 @@ int personagem::sub_life(int slp){
 void personagem::atack(weapon *arma, personagem *j){
 	cout << this->get_name() << " atacando : " << j->get_name() << " com : " << arma->get_full_name() << endl;
 	statadd_given_damage(j->recieve_damage_from(arma->get_damage(), this->get_name()));//atack and stat
+	if(!j->is_alive()){
+		recieve_loot(j);
+	}
 }
 int personagem::recieve_damage_from(int damage, std::string from){
 	damage = this->sub_life(damage);

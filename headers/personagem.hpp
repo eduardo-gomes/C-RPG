@@ -5,6 +5,9 @@ class loot{
 		bool noloot;
 		int xp;
 		unsigned int money;
+	protected:
+		void set_loot_xp(int i) { xp = i; }
+		void set_loot_money(unsigned int i) { money = i; }
 	public:
 		loot();
 		bool has_loot() const;
@@ -36,13 +39,14 @@ class personagem : public loot{
 		void add_xp(int);//try lv up
 		void try_level_up();
 		int recieve_damage_from(int, std::string);
-		virtual void statadd_recieved_damage(int){};
 		personagem();
 		virtual ~personagem();
+		virtual void statadd_recieved_damage(int){};
+		virtual void statadd_given_damage(int){};
+		virtual void recieve_loot(personagem *){};
 		virtual void atack_round() = 0;
 		virtual void atack_round(personagem *) = 0;
 		void atack(weapon *arma, personagem *j);
-		virtual void statadd_given_damage(int){};
 		virtual std::string get_name() = 0;
 		int get_life_max() const { return life_max; }
 		int get_df_damage() const { return df_damage; }
