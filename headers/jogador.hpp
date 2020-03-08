@@ -17,6 +17,7 @@ class jogador : public personagem{
 		void statadd_given_damage(int);
 		void recieve_loot(personagem *);
 		void on_death();
+		void heal();
 		~jogador();
 		jogador();
 		jogador(std::string &);

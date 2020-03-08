@@ -1,10 +1,13 @@
 #pragma once
 #include <iostream>
+#include <fstream>
+#include <random>
 #include <vector>
 #include <string>
 #include <deque>
 #include <cmath>
 #include <map>
+std::knuth_b ran_num_gen(140601);
 #include "nlohmann/json.hpp"
 //#include "weapon.hpp"
 #include "weapon.cpp"

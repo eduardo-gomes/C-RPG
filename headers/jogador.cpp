@@ -19,7 +19,7 @@ jogador::jogador(std::string &stname) : jogador(){
 	name = stname;
 }
 jogador::jogador(){
-	life = life_max = 9999;
+	life = life_max = 25;
 	sk_life = sk_damage = sk_critcal = sk_actionpoints = sk_magicalpoints = 0;
 	deaths = damage_given_all = damage_taken_all = enemies_killeds_all = damage_given = damage_taken = enemies_killeds = money = 0;
 }
@@ -59,8 +59,8 @@ std::string jogador::get_name() {
 }
 
 void jogador::create_loot() {
-	set_loot_xp((int)damage_given * level - (int)damage_taken/4 * level + 75 * (level * level));
-	set_loot_money(150U * (unsigned int)(level * level));
+	set_loot_xp((int)damage_given * level - (int)damage_taken/4 * level + 75 * (level * level) + (int)ran_num_gen() % 150 * level + (int)enemies_killeds * 75);
+	set_loot_money(150U * (unsigned int)(level * level) + (unsigned int)ran_num_gen() % 300 * (unsigned int)level);
 }
 
 void jogador::statadd_recieved_damage(int rec_dmg){
@@ -78,6 +78,10 @@ void jogador::on_death(){
 	create_loot();
 	damage_taken = damage_given = enemies_killeds = 0;
 	deaths++;
+}
+
+void jogador::heal(){
+	life = life_max;
 }
 
 void jogador::recieve_loot(personagem *j){
