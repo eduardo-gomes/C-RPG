@@ -1,83 +1,37 @@
+#define HASH_SIZE_512
 #include "headers/headers.hpp"
 using json = nlohmann::json;
 using namespace std;
-class data_jogadores{
-	public:
-		map<string, jogador *> lista;
-		jogador* get(string& name){
-			std::map<string, jogador *>::iterator it = lista.find(name);
-			if (it == lista.end()){
-				fstream abrir;
-				string fname = "jogadores/";
-				fname += name;
-				fname += ".json";
-				abrir.open(fname, ifstream::in);
-				if(abrir.good()){
-					/*std::string content((std::istreambuf_iterator<char>(abrir)),
-										(std::istreambuf_iterator<char>()));*/
-					jogador* jog = new jogador();
-					json readjog;
-					abrir >> readjog;
-					from_json(readjog, jog);
-					jog->heal();
-					return lista[name] = jog;
-				}else{
-					abrir.close();
-					return new_jogador(name);
-				}
-			}else{
-				return it->second;
-			}
-		}
-		jogador* new_jogador(string& name){
-			if(lista.find(name) != lista.end()){
-				cout << "jogador " << name << " já existe" << endl;
-				return lista[name];
-			}
-			return lista[name] = new jogador(name);
-		}
-		void save(string &name){
-			std::map<string, jogador *>::iterator it = lista.find(name);
-				if(it == lista.end()){
-				fstream abrir;
-				string fname = "jogadores/" ;
-				fname += name;
-				fname += ".json";
-				abrir.open(fname, ifstream::out | ifstream::trunc);
-				if (abrir.good()){
-					json jout;
-					to_json(jout, it->second);
-					abrir << jout;
-					abrir.close();
-				}
-			}
-		}
-		void save_all(){
-			for (std::map<string, jogador *>::iterator it = lista.begin(); it != lista.end(); ++it){
-				fstream abrir;
-				string fname = "jogadores/";
-				fname += it->first;
-				fname += ".json";
-				abrir.open(fname, ifstream::out | ifstream::trunc);
-				if(abrir.good()){
-					json jout;
-					to_json(jout, it->second);
-					abrir << jout;
-					abrir.close();
-				}
-			}
-		}
-};
 data_jogadores ljogadores;
 
 
 int main(){
 	cout<< __cplusplus << endl;
-	string nname = "edu";
+	//
+		string dn = "dummy", dps = "edu";
+		dps = generate_hash(dps);
+		ljogadores.new_jogador(dn, dps);
+	//
+	string nname = "edu", pass;
+	string hashtest, hashtest2;
+	cout << "To hash : ";
+	cout.flush();
+	cin >> hashtest;
+	hashtest = generate_hash(hashtest);
+	cout << "To hash : ";
+	cout.flush();
+	cin >> hashtest2;
+	hashtest2 = generate_hash(hashtest2);
+	cout << "IF" << comp_hash(hashtest, hashtest2) << endl;
+	/*for(int i = 0; i < 32; ++i)
+		cout << std::hex << hashtest.c_str()[i];*/
 	cout << "Insert name : ";
 	cout.flush();
 	cin >> nname;
-	//ljogadores.new_jogador(nname);
+	cout << "Insert pass : ";
+	cout.flush();
+	cin >> pass;
+	cout << "auth: " << ljogadores.auth(nname, generate_hash(pass)) << endl;
 	string sn = "sala1";
 	sala sala1(sn);
 	sala1.add_personagem(ljogadores.get(nname));

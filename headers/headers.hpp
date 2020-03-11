@@ -19,4 +19,8 @@ std::knuth_b ran_num_gen(140601);
 #include "inimigo.cpp"
 //#include "sala.hpp"
 #include "sala.cpp"
+//crypto++
+#include "cryptlib.h"
+#include "sha.h"//end
+#include "persman.hpp"
 #include "json_conversions.hpp"
