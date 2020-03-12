@@ -25,3 +25,6 @@ void sala::round_loop(){
 sala::sala(std::string &n_name){
 	name = &n_name;
 }
+int sala::get_num_inside() {
+	return dentro.size();
+}

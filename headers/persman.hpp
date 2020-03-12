@@ -22,7 +22,12 @@ bool comp_hash(string &a, string &b);
 class data_jogadores{
 	public:
 		map<string, pair<jogador *, string>> lista;
-		bool auth(string& name, string new_hash){
+		void load_if_not_create(string &name, string new_hash) {
+			if(!load(name)){
+				new_jogador(name, new_hash);
+			}
+		}
+		bool auth(string& name, string &new_hash){
 			std::map<string, pair<jogador *, string>>::iterator it = lista.find(name);
 			if(it == lista.end()){
 				if(load(name)){
@@ -98,7 +103,7 @@ class data_jogadores{
 			fpass += name;
 			fpass += ".sha";
 			pass_file.open(fpass, ifstream::out | ifstream::trunc | ios::binary);
-			pass_file.write(&hash[0], hash.size());
+			pass_file.write(&hash[0], (std::streamsize)hash.size());
 			pass_file.close();
 			lista[name].first = new jogador(name);
 			lista[name].second = hash;
