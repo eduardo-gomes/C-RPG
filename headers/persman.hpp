@@ -68,7 +68,7 @@ class data_jogadores{
 				string pass;
 				pass.resize(HASH_SIZE);
 				if(!pass_file.read(&pass[0], HASH_SIZE)){
-					cout << "read hash: " << hash_to_char(pass) << endl;
+					//cout << "read hash: " << hash_to_char(pass) << endl;
 					status = 0;
 				}
 				if(status) lista[name] = make_pair(jog, pass);
