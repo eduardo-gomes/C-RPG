@@ -9,6 +9,7 @@
 #include <map>
 std::knuth_b ran_num_gen(140601);
 #include "nlohmann/json.hpp"
+#include "sockets.hpp"
 //#include "weapon.hpp"
 #include "weapon.cpp"
 //#include "personagem.hpp"

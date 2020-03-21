@@ -1,4 +1,5 @@
 #include "jogador.hpp"
+#include <sstream>
 
 /*
 Player classe	atCorpo	atArq	at_Magi	
@@ -32,21 +33,31 @@ void jogador::atack_round(){
 	cout << "nobody selected to atack from " << this->get_name() << endl;
 }
 void jogador::atack_round(personagem *toatk){
-	std::cout << "atack 1 :" << armas[0]->get_full_name() << " or 2 : " << armas[1]->get_full_name() << " ?: ";
-	std::cout.flush();
+	std::string tosend = "atack 1 :";
+	tosend += armas[0]->get_full_name();
+	tosend += " or 2 : ";
+	tosend += armas[1]->get_full_name();
+	tosend += " ?: ";
+	out->sendtoclient(tosend);
 	std::string atack;
-	std::cin >> atack;
+	while(out->isempty());
+	atack = out->get();
+	out->next();
 	int atack_i;
 	try{
 	atack_i = stoi(atack) - 1;
 	}
 	catch(std::invalid_argument& e){
 		atack_i = 0;
-		cout << "invalid argument" << endl;
+		tosend = "invalid argument\n";
+		out->sendtoclient(tosend);
 	}
 	if(atack_i > 1 || atack_i < 0) atack_i = 0;
-	std::cout << "you selected: " << atack_i + 1 << " : " << armas[atack_i]->get_full_name() << std::endl;
-	std::cout << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << endl;
+	std::stringstream ss;
+	ss << "you selected: " << atack_i + 1 << " : " << armas[atack_i]->get_full_name() << std::endl;
+	ss << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << endl;
+	tosend = ss.str();
+	out->sendtoclient(tosend);
 	this->atack(armas[atack_i], toatk);
 	if(!toatk->is_alive()){
 		enemies_killeds++;
@@ -87,5 +98,8 @@ void jogador::heal(){
 void jogador::recieve_loot(personagem *j){
 	xp += j->get_xp_loot();
 	money += j->get_money_loot();
-	cout << get_name() << " recieved " << j->get_xp_loot() << " xp and $" << j->get_money_loot() << " from " << j->get_name() << "'s loot" << endl;
+	stringstream ss;
+	ss << get_name() << " recieved " << j->get_xp_loot() << " xp and $" << j->get_money_loot() << " from " << j->get_name() << "'s loot" << endl;
+	string tosend = ss.str();
+	out->sendtoclient(tosend);
 }

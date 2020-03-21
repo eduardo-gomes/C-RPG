@@ -10,12 +10,15 @@
 
 #include <chrono>
 #include <thread>
-bool login();
+class server_client_socket;
+bool login(server_client_socket *);
 class server_client_socket {
-	public:
+	private:
 	static const char msg_break = '\n';
 	static const unsigned int buffer_size = 1024;
 	char buffer[buffer_size+1];
+	std::thread proc;
+	public:
 	std::deque<std::string> messages;
 	std::string readed;
 	long unsigned int readedindex = 0;
@@ -23,13 +26,8 @@ class server_client_socket {
 	server_client_socket(){
 		buffer[buffer_size] = '\0';
 	}
-	server_client_socket(int socket): server_client_socket() {
-		socket_id = socket;
-		int iMode = 1;
-		ioctl(socket_id, FIONBIO, &iMode);  //non-blocking
-	}
 	ssize_t sendtoclient(std::string &str) {
-		cout << "Socket Out: " << str;
+		std::cout << "Socket Out: " << str << std::endl;
 		return send(socket_id, &str[0], str.length(), 0);
 	}
 	int next(){
@@ -43,11 +41,13 @@ class server_client_socket {
 	std::string &get(){
 		return messages.front();
 	}
-	ssize_t recvfromclient() {
+	long int recvfromclient() {
 		long int val;
 		//memset(buffer, -1, 1024);
 		val = read(socket_id, buffer, 1024);
 		if (val == -1) {
+			if(errno == EAGAIN) return 0;
+			if(errno == ECONNRESET) return -2;
 			perror("socket error");
 			return -1;
 		} else {
@@ -87,18 +87,36 @@ class server_client_socket {
 		}
 		return val;
 	}
+	int disconect(){
+		char eofc = 0;
+		send(socket_id, &eofc, 1, 0);
+		return shutdown(socket_id, SHUT_RDWR);
+	}
+	server_client_socket(int socket): server_client_socket() {
+		socket_id = socket;
+		int iMode = 1;
+		ioctl(socket_id, FIONBIO, &iMode);  //non-blocking
+		proc = std::thread(login, this);
+	}
 	~server_client_socket(){
+		proc.~thread();
 		std::string goodbye = "Closing connection";
 		sendtoclient(goodbye);
 		close(socket_id);
 	}
 };
-server_client_socket *cliente;
+std::deque<server_client_socket *> clientes;
 
 void recv_loop(){
 	while(1){
 		std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + std::chrono::milliseconds(20);
-		cliente->recvfromclient();
+		for(std::deque<server_client_socket *>::iterator it = clientes.begin(); it != clientes.end(); ++it){
+			if((*it)->recvfromclient() == -2){
+				it = clientes.erase(it);
+				if(it == clientes.end()) break;
+				if(it != clientes.begin()) --it;//no problem if it jump the new first
+			}
+		}
 		std::this_thread::sleep_until(tp);
 	}
 }
@@ -136,10 +154,10 @@ void server() {
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
+	std::thread(recv_loop).detach();
 	while ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) > 0){
-		cliente = new server_client_socket(new_socket);
-		std::thread(recv_loop).detach();
-		std::thread(login).detach();
+		clientes.push_back(new server_client_socket(new_socket));
+		//std::thread(login).detach();
 	}
 	perror("accept");
 	exit(EXIT_FAILURE);

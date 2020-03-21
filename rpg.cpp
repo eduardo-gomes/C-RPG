@@ -1,12 +1,11 @@
 #define HASH_SIZE_512
 #include "headers/headers.hpp"
-#include "headers/sockets.hpp"
 using json = nlohmann::json;
 using namespace std;
 data_jogadores ljogadores;
 SALAS salas;
 
-void after_login(string & name, jogador* jog){
+void after_login(string &name, jogador *jog, server_client_socket *cliente) {
 	int room_num;
 ENTER_NUM:
 	string chose = "Enter room number (0000-9999): ", s_num;
@@ -20,11 +19,12 @@ ENTER_NUM:
 	cliente->next();
 	if(room_num > 9999 || room_num < 0)
 		goto ENTER_NUM;
-	salas.enter_sala(room_num, jog);
+	jog->set_server_client_socket(cliente);
+	salas.enter_sala(room_num, jog, cliente);
 	ljogadores.save(name);
 }
 
-bool login(){
+bool login(server_client_socket *cliente){
 	bool returnv;
 	string nname, pass;
 	int auth = 0, trys = 3;
@@ -54,7 +54,7 @@ bool login(){
 		if(!auth)
 			cout << "Invalid credentials" << endl;
 		else{
-			after_login(nname, ljogadores.get(nname));
+			after_login(nname, ljogadores.get(nname), cliente);
 			cout << "Loging out" << endl;
 			returnv = 1;
 			goto RET;
@@ -63,7 +63,7 @@ bool login(){
 	cout << "Try again later" << endl;
 	returnv = 0;
 	RET:
-	cliente->~server_client_socket();
+	cliente->disconect();
 	return returnv;
 }
 /*

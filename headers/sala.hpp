@@ -4,9 +4,11 @@ class sala{
 	private:
 		std::string* name;
 		std::deque<personagem *> dentro;
+		std::deque<server_client_socket *> outputall;
 	public:
 		void round_loop();
 		void add_personagem(personagem *);
+		void add_personagem(personagem *, server_client_socket *);
 		sala(std::string &);
 		int get_num_inside();
 };
@@ -33,6 +35,17 @@ class SALAS{
 			s->add_personagem(pers);
 			while(1){
 				if(s->get_num_inside() > 1){
+					s->round_loop();
+					break;
+				}
+			}
+			return;
+		}
+		void enter_sala(int &num, personagem *pers, server_client_socket *out) {
+			sala *s = get_sala(num);
+			s->add_personagem(pers, out);
+			while (1) {
+				if (s->get_num_inside() > 1) {
 					s->round_loop();
 					break;
 				}
