@@ -24,7 +24,8 @@ class personagem : public loot{
 		int colectedxp, xp, level, life_max, life, df_damage, df_critical, df_actionpoints, df_magicalpoints;
 		weapon *armas[2];
 	public:
-		virtual bool is_jogador(){return 0;};
+		sala* sala_atual;
+		virtual bool is_jogador() { return 0; };
 		bool is_alive(){return life > 0;};
 		void arma_set(weapon *, int);
 		weapon* get_arma(int);

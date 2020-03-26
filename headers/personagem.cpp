@@ -107,7 +107,14 @@ void personagem::atack(weapon *arma, personagem *j){
 }
 int personagem::recieve_damage_from(int damage, std::string from){
 	damage = this->sub_life(damage);
-	cout << this->get_name() << " received damage " << damage << " from " << from << endl;
+	std::string tosend;
+	tosend = this->get_name();
+	tosend += " received damage ";
+	tosend += damage ;
+	tosend += " from ";
+	tosend += from;
+	tosend += '\n';
+	sala_atual->sendall(tosend);
 	statadd_recieved_damage(damage);
 	return damage;
 }

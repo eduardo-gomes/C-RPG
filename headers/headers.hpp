@@ -4,6 +4,7 @@
 #include <random>
 #include <vector>
 #include <string>
+#include <mutex>
 #include <deque>
 #include <cmath>
 #include <map>
@@ -12,13 +13,14 @@ std::knuth_b ran_num_gen(140601);
 #include "sockets.hpp"
 //#include "weapon.hpp"
 #include "weapon.cpp"
-//#include "personagem.hpp"
+class sala;
+#include "personagem.hpp" //needed for sala.hpp
+#include "sala.hpp"//needed for personagem.cpp
 #include "personagem.cpp"
 //#include "jogador.hpp"
 #include "jogador.cpp"
 //#include "inimigo.hpp"
 #include "inimigo.cpp"
-//#include "sala.hpp"
 #include "sala.cpp"
 //crypto++
 #include "cryptlib.h"

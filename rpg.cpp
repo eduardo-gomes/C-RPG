@@ -21,6 +21,9 @@ ENTER_NUM:
 		goto ENTER_NUM;
 	jog->set_server_client_socket(cliente);
 	salas.enter_sala(room_num, jog, cliente);
+	while(!jog->sala_atual->get_has_ended()){
+		this_thread::sleep_for(chrono::milliseconds(250));
+	}
 	ljogadores.save(name);
 }
 

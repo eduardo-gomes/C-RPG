@@ -111,7 +111,7 @@ class data_jogadores{
 		}
 		void save(string &name){
 			std::map<string, pair<jogador *, string>>::iterator it = lista.find(name);
-				if(it == lista.end()){
+			if(it != lista.end()){
 				fstream jogador_file;
 				string fname = "jogadores/" ;
 				fname += name;
