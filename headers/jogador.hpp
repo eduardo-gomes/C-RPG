@@ -7,9 +7,9 @@ class jogador : public personagem{
 		int sk_life, sk_damage, sk_critcal, sk_actionpoints, sk_magicalpoints;
 		unsigned int damage_given, damage_taken, enemies_killeds;
 		unsigned int damage_given_all, damage_taken_all, enemies_killeds_all, deaths;
-		server_client_socket *out;
+		//server_client_socket *out;
 	public:
-		void set_server_client_socket(server_client_socket *newout){out = newout;};
+		//void set_server_client_socket(server_client_socket *newout){out = newout;};
 		virtual bool is_jogador() { return 1; };
 		std::string get_name();
 		void create_loot();

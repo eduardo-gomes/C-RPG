@@ -5,7 +5,7 @@ using namespace std;
 data_jogadores ljogadores;
 SALAS salas;
 
-void after_login(string &name, jogador *jog, server_client_socket *cliente) {
+void after_login(string &name, jogador *jog, std::shared_ptr<server_client_socket> cliente) {
 	jog->set_socket(cliente);
 	int room_num = -1;
 	string tosend = "Menu Choose an option:\n\t1- Enter room\n You selected (1)\n";
@@ -23,7 +23,7 @@ void after_login(string &name, jogador *jog, server_client_socket *cliente) {
 		if(room_num > 9999 || room_num < 0)
 			room_num = -1;
 	}
-	jog->set_server_client_socket(cliente);
+	//jog->set_server_client_socket(cliente);
 	salas.enter_sala(room_num, jog);
 	while(!jog->sala_atual->get_has_ended()){
 		this_thread::sleep_for(chrono::milliseconds(250));
@@ -31,7 +31,7 @@ void after_login(string &name, jogador *jog, server_client_socket *cliente) {
 	ljogadores.save(name);
 }
 
-bool token_login(server_client_socket *cliente, std::string token){
+bool token_login(std::shared_ptr<server_client_socket> cliente, std::string token){//not reference to client because is other thread
 	bool returnv;
 	//string nname, pass;
 	int auth = 0/*, trys = 3*/;

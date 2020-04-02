@@ -102,10 +102,10 @@ int personagem::sub_life(int slp){
 void personagem::heal(){
 	life = life_max;
 }
-server_client_socket* personagem::get_socket(){
+std::shared_ptr<server_client_socket>& personagem::get_socket() {
 	return socket;
 }
-void personagem::set_socket(server_client_socket* newsocket){
+void personagem::set_socket(std::shared_ptr<server_client_socket>& newsocket) {
 	socket = newsocket;
 }
 void personagem::atack(weapon *arma, personagem *j){

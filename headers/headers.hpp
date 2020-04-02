@@ -4,6 +4,7 @@
 #include <random>
 #include <vector>
 #include <string>
+#include <memory>
 #include <mutex>
 #include <deque>
 #include <cmath>

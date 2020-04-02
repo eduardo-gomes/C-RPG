@@ -12,7 +12,7 @@
 #include <chrono>
 #include <thread>
 class server_client_socket;
-bool token_login(server_client_socket *, std::string);
+bool token_login(std::shared_ptr<server_client_socket>, std::string);
 class server_client_socket {
 	private:
 	bool auth;
@@ -21,11 +21,14 @@ class server_client_socket {
 	static const unsigned int buffer_size = 1024;
 	char buffer[buffer_size+1];
 	std::thread proc;
+	std::shared_ptr<jogador> socket_of_jogador;
 	public:
 	std::deque<std::string> messages;
 	std::string readed;
 	long unsigned int readedindex = 0;
 	int socket_id;
+	std::shared_ptr<jogador>& get_jogador(){return socket_of_jogador;}
+	void set_jogador(std::shared_ptr<jogador>& newjog){socket_of_jogador = newjog;}
 	server_client_socket(){
 		buffer[buffer_size] = '\0';
 	}
@@ -95,10 +98,10 @@ class server_client_socket {
 		send(socket_id, &eofc, 1, 0);
 		return shutdown(socket_id, SHUT_RDWR);
 	}
-	void auth_login(std::string &authst){
+	void auth_login(std::string &authst, std::shared_ptr<server_client_socket> ptr) {
 		auth = 1;
 		auth_name = authst;
-		proc = std::thread(token_login, this, authst);
+		proc = std::thread(token_login, ptr, authst);
 	}
 	server_client_socket(int socket): server_client_socket() {
 		auth = 0;
@@ -120,15 +123,15 @@ class server_client_null: public server_client_socket{
 	//recv
 };
 server_client_null NULL_CLIENT_NULL;
-server_client_socket *NULL_CLIENT = (server_client_socket*)(&NULL_CLIENT_NULL);
-std::map<int, server_client_socket *> clientes;
+std::shared_ptr<server_client_socket> NULL_CLIENT ((server_client_socket *)(&NULL_CLIENT_NULL));
+std::map<int, std::shared_ptr<server_client_socket>> clientes;
 std::mutex clientes_mtx;
 
 void recv_loop(){
 	while(1){
 		std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + std::chrono::milliseconds(20);
 		clientes_mtx.lock();
-		for(std::map<int, server_client_socket *>::iterator it = clientes.begin(); it != clientes.end(); ++it){
+		for (std::map<int, std::shared_ptr<server_client_socket>>::iterator it = clientes.begin(); it != clientes.end(); ++it) {
 			if((it->second)->recvfromclient() == -2){
 				it->second->~server_client_socket();
 				it = clientes.erase(it);
@@ -154,7 +157,7 @@ void try_auth(server_client_socket *auth){
 			clientes_mtx.lock();
 			auto iter = clientes.find(sid);
 			if(iter != clientes.end()){
-				iter->second->auth_login(token);
+				iter->second->auth_login(token, iter->second);
 			}else std::cout << "Recived invalid sid" << std::endl;
 			clientes_mtx.unlock();
 		}else std::cout << "Recived invalid auth_json" << std::endl;
