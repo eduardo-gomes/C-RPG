@@ -16,19 +16,19 @@ struct NotFindAfterLoad : public std::exception{
 		return "Cant Find after load";
 	}
 };
-string hash_to_char(string &hash);
-bool comp_hash(string &a, string &b);
+//string hash_to_char(string &hash);
+//bool comp_hash(string &a, string &b);
 
 class data_jogadores{
 	public:
-		map<string, pair<jogador *, string>> lista;
-		void load_if_not_create(string &name, string new_hash) {
+		map<string, jogador *> lista;
+		/*void load_if_not_create(string &name) {
 			if(!load(name)){
-				new_jogador(name, new_hash);
+				new_jogador(name);
 			}
-		}
-		bool auth(string& name, string &new_hash){
-			std::map<string, pair<jogador *, string>>::iterator it = lista.find(name);
+		}*/
+		/*bool auth(string& name){
+			std::map<string, jogador *>::iterator it = lista.find(name);
 			if(it == lista.end()){
 				if(load(name)){
 					it = lista.find(name);
@@ -36,20 +36,17 @@ class data_jogadores{
 						throw NotFindAfterLoad();
 				}
 			}
-			return comp_hash(it->second.second, new_hash);
-		}
+			return 1;
+		}*/
 		bool load(string& name){
 			bool status = 1;
-			std::map<string, pair<jogador *, string>>::iterator it = lista.find(name);
+			std::map<string, jogador *>::iterator it = lista.find(name);
 			if (it == lista.end()){
-				fstream jogador_file, pass_file;
+				fstream jogador_file;
 				string fname = "jogadores/";
 				fname += name;
-				string fpass = fname;
 				fname += ".json";
-				fpass += ".sha";
 				jogador_file.open(fname, ifstream::in);
-				pass_file.open(fpass, ifstream::in | ios::binary);
 				jogador* jog = new jogador();
 				if(jogador_file.good()){
 					/*std::string content((std::istreambuf_iterator<char>(jogador_file)),
@@ -60,25 +57,13 @@ class data_jogadores{
 					jog->heal();
 				}else
 					status = 0;
-				#ifdef HASH_SIZE_512
-					#define HASH_SIZE 512/8
-				#else
-					#define HASH_SIZE 256/8
-				#endif
-				string pass;
-				pass.resize(HASH_SIZE);
-				if(!pass_file.read(&pass[0], HASH_SIZE)){
-					//cout << "read hash: " << hash_to_char(pass) << endl;
-					status = 0;
-				}
-				if(status) lista[name] = make_pair(jog, pass);
+				if(status) lista[name] = jog;
 				jogador_file.close();
-				pass_file.close();
 			}
 			return status;
 		}
 		jogador *get(string &name){
-			std::map<string, pair<jogador *, string>>::iterator it = lista.find(name);
+			std::map<string, jogador *>::iterator it = lista.find(name);
 			if (it == lista.end()){
 				bool isloaded = load(name);
 				if(!isloaded){
@@ -91,26 +76,21 @@ class data_jogadores{
 					}
 				}
 			}
-			return it->second.first;
+			return it->second;
 		}
-		jogador* new_jogador(string& name, string& hash){
-			if(lista.find(name) != lista.end()){
-				cout << "jogador " << name << " já existe" << endl;
-				return lista[name].first;
+		jogador* new_jogador(string& name, string& jogador_name){
+			if(this->load(name)){
+				if(lista.find(name) != lista.end()){
+					cout << "jogador " << name << " já existe" << endl;
+					//to rename here
+					return lista[name];
+				}
 			}
-			fstream pass_file;
-			string fpass = "jogadores/";
-			fpass += name;
-			fpass += ".sha";
-			pass_file.open(fpass, ifstream::out | ifstream::trunc | ios::binary);
-			pass_file.write(&hash[0], (std::streamsize)hash.size());
-			pass_file.close();
-			lista[name].first = new jogador(name);
-			lista[name].second = hash;
-			return lista[name].first;
+			lista[name] = new jogador(jogador_name);
+			return lista[name];
 		}
 		void save(string &name){
-			std::map<string, pair<jogador *, string>>::iterator it = lista.find(name);
+			std::map<string, jogador *>::iterator it = lista.find(name);
 			if(it != lista.end()){
 				fstream jogador_file;
 				string fname = "jogadores/" ;
@@ -119,14 +99,14 @@ class data_jogadores{
 				jogador_file.open(fname, ifstream::out | ifstream::trunc);
 				if (jogador_file.good()){
 					nlohmann::json jout;
-					to_json(jout, it->second.first);
+					to_json(jout, it->second);
 					jogador_file << jout;
 					jogador_file.close();
 				}
 			}
 		}
 		void save_all(){
-			for (std::map<string, pair<jogador *, string>>::iterator it = lista.begin(); it != lista.end(); ++it){
+			for (std::map<string, jogador *>::iterator it = lista.begin(); it != lista.end(); ++it){
 				fstream jogador_file;
 				string fname = "jogadores/";
 				fname += it->first;
@@ -134,44 +114,10 @@ class data_jogadores{
 				jogador_file.open(fname, ifstream::out | ifstream::trunc);
 				if(jogador_file.good()){
 					nlohmann::json jout;
-					to_json(jout, it->second.first);
+					to_json(jout, it->second);
 					jogador_file << jout;
 					jogador_file.close();
 				}
 			}
 		}
 };
-
-bool comp_hash(string &a, string &b){
-	return a.compare(b) == 0;
-}
-string generate_hash(string &msg);
-string hash_to_char(string &hash){
-	#ifdef HASH_SIZE_512
-		#ifndef HASH_SIZE_256
-		#define HASH_SIZE_256
-		#endif
-		#define HASH_SIZE 512/8
-	#else
-		#define HASH_SIZE 256/8
-	#endif
-	string out;
-	char tochar[2];
-	for(long unsigned int x = 0; x < HASH_SIZE; ++x){//-Werror=sign-conversion
-		tochar[0] = hash[x] >> 4 & 0xF;
-		tochar[1] = hash[x] & 0xF;
-		if(tochar[0] > 9)
-			tochar[0] += 'A'-10;
-		else
-			tochar[0] += '0';
-		if (tochar[1] > 9)
-			tochar[1] += 'A'-10;
-		else
-			tochar[1] += '0';
-		out += tochar[0];
-		out += tochar[1];
-	}
-	#undef HASH_SIZE
-	return out;
-}
-#include "./sha256.hpp"

@@ -23,6 +23,7 @@ class personagem : public loot{
 	protected:
 		int colectedxp, xp, level, life_max, life, df_damage, df_critical, df_actionpoints, df_magicalpoints;
 		weapon *armas[2];
+		server_client_socket* socket;
 	public:
 		sala* sala_atual;
 		virtual bool is_jogador() { return 0; };
@@ -40,6 +41,9 @@ class personagem : public loot{
 		void add_xp(int);//try lv up
 		void try_level_up();
 		int recieve_damage_from(int, std::string);
+		void heal();
+		server_client_socket * get_socket();
+		void set_socket(server_client_socket*);
 		personagem();
 		virtual ~personagem();
 		virtual void statadd_recieved_damage(int){};

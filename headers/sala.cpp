@@ -10,10 +10,10 @@ void sala::add_personagem(personagem *ps){
 	tosend += " entrou\n";
 	sendall(tosend);
 }
-void sala::add_personagem(personagem *ps, server_client_socket *out) {
+/*void sala::add_personagem(personagem *ps, server_client_socket *out) {
 	outputall.push_back(out);
 	add_personagem(ps);
-}
+}*/
 void sala::round_loop(){
 	int cont = 2;
 	std::string slife = "'s life : ", sturn = "'s turn", tosend, endl = "\n";
@@ -62,6 +62,8 @@ void sala::round_loop(){
 	tosend += endl;
 	sendall(tosend);
 	std::cout << tosend;
+	has_ended = 1;
+	//outputall.clear();
 }
 sala::sala(){
 	//std::string una = "Unammed sala";
@@ -75,15 +77,24 @@ int sala::get_num_inside() {
 	return dentro.size() + to_dentro.size();
 }
 void sala::start_round(){
-	if(!has_started && !has_ended){
+	if(has_ended){
+		for(auto it = dentro.begin(); it != dentro.end(); ++it){
+			if((*it)->is_jogador()){
+				it = dentro.erase(it);
+				if(it == dentro.end()) break;
+			}else (*it)->heal();
+		}
+		has_ended = 0;
+	}
+	if(!has_ended){
 		has_started = 1;
 		std::thread([this] {this->round_loop();}).detach();///(this->round_loop).detach();
 	}
 }
 
 void sala::sendall(std::string &send){
-	for (auto y : outputall) {
-		y->sendtoclient(send);
+	for (auto y : dentro) {
+		y->get_socket()->sendtoclient(send);
 	}
 }
 
@@ -115,21 +126,15 @@ void SALAS::enter_sala(int &num, personagem* pers){
 			break;
 		}
 	}*/
-	if (!s->get_has_started() && !s->get_has_ended()) s->start_round();
+	if ((!s->get_has_started() && !s->get_has_ended()) || s->get_has_ended()) s->start_round();
 	return;
 }
-void SALAS::enter_sala(int &num, personagem *pers, server_client_socket *out) {
+/*void SALAS::enter_sala(int &num, personagem *pers, server_client_socket *out) {
 	sala *s = get_sala(num);
 	s->add_personagem(pers, out);
-	/*while (1) {
-		if (s->get_num_inside() > 1) {
-			s->round_loop();
-			break;
-		}
-	}*/
-	if (!s->get_has_started() && !s->get_has_ended()) s->start_round();
+	if ((!s->get_has_started() && !s->get_has_ended()) || s->get_has_ended()) s->start_round();
 	return;
-}
+}*/
 sala* SALAS::get_sala(int &num) {
 	if (salas_lista.find(num) == salas_lista.end()) {
 		std::string num_s = std::to_string(num);

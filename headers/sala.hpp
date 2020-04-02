@@ -7,7 +7,7 @@ class sala{
 		std::deque<personagem *> dentro;
 		std::deque<personagem *> to_dentro;
 		std::mutex mtx_to_dentro;
-		std::deque<server_client_socket *> outputall;
+		//std::deque<server_client_socket *> outputall;
 	public:
 		bool get_has_ended();
 		bool get_has_started(){return has_started;}
@@ -15,7 +15,7 @@ class sala{
 		void sendall(std::string &);
 		void round_loop();
 		void add_personagem(personagem *);
-		void add_personagem(personagem *, server_client_socket *);
+		//void add_personagem(personagem *, server_client_socket *);
 		sala();
 		sala(std::string &);
 		int get_num_inside();
@@ -30,5 +30,5 @@ class SALAS{
 		sala* get_sala(int &num);
 		sala* create_sala_bot(int num);
 		void enter_sala(int &num, personagem* pers);
-		void enter_sala(int &num, personagem *pers, server_client_socket *out);
+		//void enter_sala(int &num, personagem *pers, server_client_socket *out);
 };

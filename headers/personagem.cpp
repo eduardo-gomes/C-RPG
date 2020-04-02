@@ -28,6 +28,7 @@ personagem::personagem(){
 	level = 1;
 	df_damage = df_critical = df_actionpoints = df_magicalpoints = 10;
 	life = life_max = 20;
+	socket = NULL_CLIENT;
 }
 personagem::~personagem(){
 	//std::cout << "destroing a1 and a2" << std::endl;
@@ -98,6 +99,15 @@ int personagem::sub_life(int slp){
 	life -= slp;
 	return slp;
 }
+void personagem::heal(){
+	life = life_max;
+}
+server_client_socket* personagem::get_socket(){
+	return socket;
+}
+void personagem::set_socket(server_client_socket* newsocket){
+	socket = newsocket;
+}
 void personagem::atack(weapon *arma, personagem *j){
 	cout << this->get_name() << " atacando : " << j->get_name() << " com : " << arma->get_full_name() << endl;
 	statadd_given_damage(j->recieve_damage_from(arma->get_damage(), this->get_name()));//atack and stat
@@ -110,7 +120,7 @@ int personagem::recieve_damage_from(int damage, std::string from){
 	std::string tosend;
 	tosend = this->get_name();
 	tosend += " received damage ";
-	tosend += damage ;
+	tosend += to_string(damage) ;
 	tosend += " from ";
 	tosend += from;
 	tosend += '\n';

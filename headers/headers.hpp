@@ -22,8 +22,5 @@ class sala;
 //#include "inimigo.hpp"
 #include "inimigo.cpp"
 #include "sala.cpp"
-//crypto++
-#include "cryptlib.h"
-#include "sha.h"//end
 #include "persman.hpp"
 #include "json_conversions.hpp"
