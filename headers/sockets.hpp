@@ -13,6 +13,7 @@
 #include <thread>
 class server_client_socket;
 bool token_login(std::shared_ptr<server_client_socket>, std::string);
+class jogador;
 class server_client_socket {
 	private:
 	bool auth;
@@ -185,7 +186,7 @@ void auth_loop(){
 	}
 }
 void new_connection(int socket_id){
-	server_client_socket *novo = new server_client_socket(socket_id);
+	std::shared_ptr<server_client_socket> novo (new server_client_socket(socket_id));
 	std::string tosend = "To login open:\nhttps://eduardogomes.eng.br/jogo/auth/handler?sid=";
 	tosend += std::to_string(socket_id);
 	tosend += '\n';

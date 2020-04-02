@@ -1,5 +1,5 @@
 #include "sala.hpp"
-void sala::add_personagem(personagem *ps){
+void sala::add_personagem(std::shared_ptr<personagem>& ps){
 	mtx_to_dentro.lock();
 	to_dentro.push_back(ps);
 	mtx_to_dentro.unlock();
@@ -10,10 +10,6 @@ void sala::add_personagem(personagem *ps){
 	tosend += " entrou\n";
 	sendall(tosend);
 }
-/*void sala::add_personagem(personagem *ps, server_client_socket *out) {
-	outputall.push_back(out);
-	add_personagem(ps);
-}*/
 void sala::round_loop(){
 	int cont = 2;
 	std::string slife = "'s life : ", sturn = "'s turn", tosend, endl = "\n";
@@ -40,15 +36,16 @@ void sala::round_loop(){
 		tosend += '\n';
 		sendall(tosend);
 		std::cout << tosend;
-		for(auto x : dentro){
+		for(auto it = dentro.begin(); it != dentro.end(); ++it){
 			tosend = endl;
-			tosend += x->get_name();
+			tosend += (*it)->get_name();
 			tosend += sturn;
 			tosend += endl;
 			sendall(tosend);
 			std::cout << tosend;
-			personagem *recieve = dentro.back() == x ? dentro.front(): dentro.back();
-			x->atack_round(recieve);
+			personagem *recieve = (dentro.back() == (*it)) ? dentro.front().get(): dentro.back().get();
+			// TODO ask personagem who wants to atack
+			(*it)->atack_round(recieve);
 			if(!recieve->is_alive()){
 				cont--;
 				break;
@@ -114,10 +111,11 @@ bool sala::get_has_ended(){
 
 sala* SALAS::create_sala_bot(int num) {
 	sala *s = get_sala(num);
-	s->add_personagem(new inimigo());
+	auto temp = std::static_pointer_cast<personagem>(std::shared_ptr<inimigo>(new inimigo()));
+	s->add_personagem(temp);
 	return s;
 }
-void SALAS::enter_sala(int &num, personagem* pers){
+void SALAS::enter_sala(int &num, std::shared_ptr<personagem>& pers){
 	sala *s = get_sala(num);
 	s->add_personagem(pers);
 	/*while(1){
@@ -129,12 +127,6 @@ void SALAS::enter_sala(int &num, personagem* pers){
 	if ((!s->get_has_started() && !s->get_has_ended()) || s->get_has_ended()) s->start_round();
 	return;
 }
-/*void SALAS::enter_sala(int &num, personagem *pers, server_client_socket *out) {
-	sala *s = get_sala(num);
-	s->add_personagem(pers, out);
-	if ((!s->get_has_started() && !s->get_has_ended()) || s->get_has_ended()) s->start_round();
-	return;
-}*/
 sala* SALAS::get_sala(int &num) {
 	if (salas_lista.find(num) == salas_lista.end()) {
 		std::string num_s = std::to_string(num);

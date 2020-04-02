@@ -38,11 +38,11 @@ void jogador::atack_round(personagem *toatk){
 	tosend += " or 2 : ";
 	tosend += armas[1]->get_full_name();
 	tosend += " ?: ";
-	out->sendtoclient(tosend);
+	socket->sendtoclient(tosend);
 	std::string atack;
-	while(out->isempty());
-	atack = out->get();
-	out->next();
+	while(socket->isempty());
+	atack = socket->get();
+	socket->next();
 	int atack_i;
 	try{
 	atack_i = stoi(atack) - 1;
@@ -50,14 +50,14 @@ void jogador::atack_round(personagem *toatk){
 	catch(std::invalid_argument& e){
 		atack_i = 0;
 		tosend = "invalid argument\n";
-		out->sendtoclient(tosend);
+		socket->sendtoclient(tosend);
 	}
 	if(atack_i > 1 || atack_i < 0) atack_i = 0;
 	std::stringstream ss;
 	ss << "you selected: " << atack_i + 1 << " : " << armas[atack_i]->get_full_name() << std::endl;
 	ss << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << endl;
 	tosend = ss.str();
-	out->sendtoclient(tosend);
+	socket->sendtoclient(tosend);
 	this->atack(armas[atack_i], toatk);
 	if(!toatk->is_alive()){
 		enemies_killeds++;
@@ -101,5 +101,5 @@ void jogador::recieve_loot(personagem *j){
 	stringstream ss;
 	ss << get_name() << " recieved " << j->get_xp_loot() << " xp and $" << j->get_money_loot() << " from " << j->get_name() << "'s loot" << endl;
 	string tosend = ss.str();
-	out->sendtoclient(tosend);
+	socket->sendtoclient(tosend);
 }

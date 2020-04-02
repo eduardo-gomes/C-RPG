@@ -2,10 +2,8 @@
 #include "headers/headers.hpp"
 using json = nlohmann::json;
 using namespace std;
-data_jogadores ljogadores;
-SALAS salas;
 
-void after_login(string &name, jogador *jog, std::shared_ptr<server_client_socket> cliente) {
+void after_login(string &name, std::shared_ptr<jogador> jog, std::shared_ptr<server_client_socket> cliente) {
 	jog->set_socket(cliente);
 	int room_num = -1;
 	string tosend = "Menu Choose an option:\n\t1- Enter room\n You selected (1)\n";
@@ -24,11 +22,11 @@ void after_login(string &name, jogador *jog, std::shared_ptr<server_client_socke
 			room_num = -1;
 	}
 	//jog->set_server_client_socket(cliente);
-	salas.enter_sala(room_num, jog);
+	SALAS::enter_sala_jog(room_num, jog);
 	while(!jog->sala_atual->get_has_ended()){
 		this_thread::sleep_for(chrono::milliseconds(250));
 	}
-	ljogadores.save(name);
+	persman::save(name);
 }
 
 bool token_login(std::shared_ptr<server_client_socket> cliente, std::string token){//not reference to client because is other thread
@@ -56,7 +54,7 @@ bool token_login(std::shared_ptr<server_client_socket> cliente, std::string toke
 		cliente->next();
 		pass = generate_hash(pass);
 		ljogadores.load_if_not_create(nname, pass);*/
-		auth = ljogadores.load(token);
+		auth = persman::load(token);
 		if(!auth){
 			string iname = "Insert new name: ", nname;
 			cliente->sendtoclient(iname);
@@ -64,9 +62,9 @@ bool token_login(std::shared_ptr<server_client_socket> cliente, std::string toke
 			while (cliente->isempty()) {}
 			nname = cliente->get();
 			cliente->next();
-			ljogadores.new_jogador(token, nname);
+			persman::new_jogador(token, nname);
 		}
-		after_login(token, ljogadores.get(token), cliente);
+		after_login(token, persman::get(token), cliente);
 		cout << "Loging out" << endl;
 		returnv = 1;
 	//}trys end
@@ -80,10 +78,10 @@ bool token_login(std::shared_ptr<server_client_socket> cliente, std::string toke
 */
 int main(){
 	cout<< __cplusplus << endl;
-	salas.create_sala_bot(0);
+	SALAS::create_sala_bot(0);
 	thread server_thread(server);
 	//thread authsv_thread(auth_server);
 	auth_server();
 	//login();
-	ljogadores.save_all();
+	persman::save_all();
 }

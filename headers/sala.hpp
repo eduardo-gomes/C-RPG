@@ -4,8 +4,8 @@ class sala{
 	private:
 		bool has_ended, has_started;
 		std::string* name;
-		std::deque<personagem *> dentro;
-		std::deque<personagem *> to_dentro;
+		std::deque<std::shared_ptr<personagem>> dentro;
+		std::deque<std::shared_ptr<personagem>> to_dentro;
 		std::mutex mtx_to_dentro;
 		//std::deque<server_client_socket *> outputall;
 	public:
@@ -14,7 +14,7 @@ class sala{
 		void clear_room();
 		void sendall(std::string &);
 		void round_loop();
-		void add_personagem(personagem *);
+		void add_personagem(std::shared_ptr<personagem>&);
 		//void add_personagem(personagem *, server_client_socket *);
 		sala();
 		sala(std::string &);
@@ -23,12 +23,13 @@ class sala{
 };
 typedef class sala sala;//vscode sala is not a type name
 
-class SALAS{
-	private:
-		std::map<int, sala*> salas_lista;
-	public:
-		sala* get_sala(int &num);
-		sala* create_sala_bot(int num);
-		void enter_sala(int &num, personagem* pers);
-		//void enter_sala(int &num, personagem *pers, server_client_socket *out);
-};
+namespace SALAS {
+	std::map<int, sala *> salas_lista;
+	sala *get_sala(int &num);
+	sala *create_sala_bot(int num);
+	void enter_sala(int &num, std::shared_ptr<personagem> &pers);
+	void enter_sala_jog(int &num, std::shared_ptr<jogador> &pers){
+		auto copy = std::static_pointer_cast<personagem>(pers);
+		enter_sala(num, copy);
+	}
+}	// namespace SALAS
