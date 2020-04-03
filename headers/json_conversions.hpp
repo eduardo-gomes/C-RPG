@@ -21,6 +21,7 @@ void from_json(const json& j, loot *p){
 
 void to_json(json &j, const weapon *p){
 	j = {
+		{"tipo", p->get_tipo()},
 		{"material",p->material},
 		{"xp",p->xp},
 		{"damage_df",p->damage_df},
@@ -29,7 +30,31 @@ void to_json(json &j, const weapon *p){
 		{"precision_buff",p->precision_buff}
 	};
 }
-void from_json(const json &j, weapon *p){
+void from_json(const json &j, std::shared_ptr<weapon>&p){
+	auto &tipo = j.at("tipo");
+	int tipon;
+	if(tipo.is_number_integer())
+		tipo.get_to(tipon);
+	else{
+		std::string temp;
+		tipo.get_to(temp);
+		cout << "WARNING: weapon tipo json read as string" << endl;
+		tipon = atoi(temp.c_str());
+	}
+	switch (tipon){
+		case weapon_T::SWORD:
+			p = std::shared_ptr<weapon>(new sword());
+			break;
+		case weapon_T::BOW:
+			p = std::shared_ptr<weapon>(new bow());
+			break;
+		case weapon_T::WAND:
+			p = std::shared_ptr<weapon>(new wand());
+			break;
+		default:
+			p = std::shared_ptr<weapon>(new sword());
+			break;
+	}
 	j.at("material").get_to(p->material);
 	j.at("xp").get_to(p->xp);
 	j.at("damage_df").get_to(p->damage_df);
@@ -40,8 +65,8 @@ void from_json(const json &j, weapon *p){
 
 void to_json(json& j, const personagem *p){
 	json j_loot, arma0, arma1;
-	to_json(arma0, p->armas[0]);
-	to_json(arma1, p->armas[1]);
+	to_json(arma0, p->armas[0].get());
+	to_json(arma1, p->armas[1].get());
 	to_json(j_loot, (const loot*)p);
 	j = {
 			{"colectedxp", p->get_all_xp()},

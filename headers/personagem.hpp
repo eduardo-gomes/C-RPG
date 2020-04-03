@@ -22,14 +22,14 @@ class loot{
 class personagem : public loot{
 	protected:
 		int colectedxp, xp, level, life_max, life, df_damage, df_critical, df_actionpoints, df_magicalpoints;
-		weapon *armas[2];
+		std::shared_ptr<weapon> armas[2];
 		std::shared_ptr<server_client_socket> socket;
 	public:
 		sala* sala_atual;
 		virtual bool is_jogador() { return 0; };
 		bool is_alive(){return life > 0;};
-		void arma_set(weapon *, int);
-		weapon* get_arma(int);
+		void arma_set(std::shared_ptr<weapon>&, int);
+		std::shared_ptr<weapon>& get_arma(int);
 		int get_life() const;
 		void set_life(int);
 		void add_life(int);
@@ -48,10 +48,10 @@ class personagem : public loot{
 		virtual ~personagem();
 		virtual void statadd_recieved_damage(int){};
 		virtual void statadd_given_damage(int){};
-		virtual void recieve_loot(personagem *){};
+		virtual void recieve_loot(std::shared_ptr<personagem>&){};
 		virtual void atack_round() = 0;
-		virtual void atack_round(personagem *) = 0;
-		void atack(weapon *arma, personagem *j);
+		virtual void atack_round(std::shared_ptr<personagem> &) = 0;
+		void atack(std::shared_ptr<weapon> &arma, std::shared_ptr<personagem> &j);
 		virtual std::string get_name() = 0;
 		int get_life_max() const { return life_max; }
 		int get_df_damage() const { return df_damage; }

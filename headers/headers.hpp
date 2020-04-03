@@ -11,6 +11,7 @@
 #include <map>
 std::knuth_b ran_num_gen(140601);
 #include "nlohmann/json.hpp"
+#define ISEMPTY_DELAY std::this_thread::sleep_for(std::chrono::milliseconds(50));
 #include "sockets.hpp"
 //#include "weapon.hpp"
 #include "weapon.cpp"
@@ -23,6 +24,6 @@ class sala;
 //#include "inimigo.hpp"
 #include "inimigo.cpp"
 #include "sala.cpp"
-#include "menu.hpp"
 #include "persman.hpp"
+#include "menu.hpp"
 #include "json_conversions.hpp"

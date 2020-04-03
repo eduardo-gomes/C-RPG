@@ -22,14 +22,14 @@ weapon::weapon(){
 	damage_buff = 0;
 }
 weapon::~weapon() {}
-int weapon::get_tipo(){
+int weapon::get_tipo() const {
 	return 0;
 }
-const std::string* weapon::get_material_name(){
-	return &weapon_T::materials[material];
+const std::string& weapon::get_material_name(){
+	return weapon_T::materials[material];
 }
 std::string weapon::get_full_name(){
-	string rt = *get_material_name();
+	string rt = get_material_name();
 	rt += ' ';
 	rt += get_tipo_st();
 	return rt;
@@ -79,7 +79,7 @@ bow::bow(){
 	damage_df = bow_::damage_df;
 	precision = bow_::precision;
 }
-int bow::get_tipo(){
+int bow::get_tipo() const{
 	return weapon_T::BOW;
 }
 std::string bow::get_tipo_st(){
@@ -90,7 +90,7 @@ sword::sword(){
 	damage_df = sword_::damage_df;
 	precision = sword_::precision;
 }
-int sword::get_tipo(){
+int sword::get_tipo() const{
 	return weapon_T::SWORD;
 }
 std::string sword::get_tipo_st(){
@@ -101,7 +101,7 @@ wand::wand(){
 	damage_df = wand_::damage_df;
 	precision = wand_::precision;
 }
-int wand::get_tipo(){
+int wand::get_tipo() const{
 	return weapon_T::WAND;
 }
 std::string wand::get_tipo_st(){

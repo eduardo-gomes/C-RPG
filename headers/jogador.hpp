@@ -1,5 +1,8 @@
 #pragma once
 #include "personagem.hpp"
+namespace menu{
+	void rename(std::shared_ptr<jogador> &);
+}
 class jogador : public personagem{
 	private:
 		std::string name;
@@ -17,10 +20,10 @@ class jogador : public personagem{
 		std::string get_name();
 		void create_loot();
 		void atack_round();
-		void atack_round(personagem *);
+		void atack_round(std::shared_ptr<personagem>&);
 		void statadd_recieved_damage(int);
 		void statadd_given_damage(int);
-		void recieve_loot(personagem *);
+		void recieve_loot(std::shared_ptr<personagem>&);
 		void on_death();
 		void heal();
 		~jogador();
@@ -34,4 +37,5 @@ class jogador : public personagem{
 		int get_sk_magicalpoints() const { return sk_magicalpoints; }
 		friend void from_json(const nlohmann::json &j, jogador *p);
 		friend void to_json(nlohmann::json &j, const jogador *p);
+		friend void menu::rename(std::shared_ptr<jogador> &);
 };

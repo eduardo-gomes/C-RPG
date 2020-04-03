@@ -1,6 +1,8 @@
 #include "inimigo.hpp"
 inimigo::inimigo(){
 	create_loot();
+	armas[0] = std::shared_ptr<weapon>(new bow());
+	armas[1] = std::shared_ptr<weapon>(new sword());
 }
 std::string inimigo::get_name() {
 	return "IA_name";
@@ -8,7 +10,7 @@ std::string inimigo::get_name() {
 void inimigo::atack_round(){
 	cout << "nobody selected to atack from " << this->get_name() << endl;
 }
-void inimigo::atack_round(personagem *p){
+void inimigo::atack_round(std::shared_ptr<personagem>& p) {
 	std::cout << "IA goes here" << std::endl;
 	atack(armas[0]->get_damage() > armas[1]->get_damage() ? armas[0] : armas[1], p);
 }

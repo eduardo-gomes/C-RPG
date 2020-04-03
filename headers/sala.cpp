@@ -43,7 +43,7 @@ void sala::round_loop(){
 			tosend += endl;
 			sendall(tosend);
 			std::cout << tosend;
-			personagem *recieve = (dentro.back() == (*it)) ? dentro.front().get(): dentro.back().get();
+			std::shared_ptr<personagem>& recieve = (dentro.back() == (*it)) ? dentro.front(): dentro.back();
 			// TODO ask personagem who wants to atack
 			(*it)->atack_round(recieve);
 			if(!recieve->is_alive()){

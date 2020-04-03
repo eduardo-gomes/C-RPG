@@ -24,31 +24,31 @@ class weapon{
 		void add_damage_buff(int);
 		int get_xp();
 		void add_xp(int);
-		const std::string* get_material_name();
-		virtual int get_tipo();
+		const std::string& get_material_name();
+		virtual int get_tipo() const;
 		virtual std::string get_tipo_st();
 		std::string get_full_name();
 		friend void to_json(nlohmann::json &j, const weapon *p);
-		friend void from_json(const nlohmann::json &j, weapon *p);
+		friend void from_json(const nlohmann::json &j, std::shared_ptr<weapon> &p);
 };
 
 class bow : public weapon{
 	public:
 		bow();
-		int get_tipo();
+		int get_tipo() const;
 		std::string get_tipo_st();
 };
 
 class sword : public weapon{
 	public:
 		sword();
-		int get_tipo();
+		int get_tipo() const;
 		std::string get_tipo_st();
 };
 
 class wand : public weapon{
 	public:
 		wand();
-		int get_tipo();
+		int get_tipo() const;
 		std::string get_tipo_st();
 };

@@ -18,10 +18,12 @@ struct NotFindAfterLoad : public std::exception {
 };
 //string hash_to_char(string &hash);
 //bool comp_hash(string &a, string &b);
-
+namespace menu{
+	void weapon_chooser(std::shared_ptr<jogador> &jog);
+}
 namespace persman {
 	std::map<string, std::shared_ptr<jogador>> lista;
-	bool load(string &name) {
+	bool load(const string &name) {
 		bool status = 1;
 		std::map<string, std::shared_ptr<jogador>>::iterator it = lista.find(name);
 		if (it == lista.end()) {
@@ -61,7 +63,7 @@ namespace persman {
 		}
 		return it->second;
 	}
-	std::shared_ptr<jogador>& new_jogador(string &name, string &jogador_name) {
+	std::shared_ptr<jogador>& new_jogador(const string &name, string &jogador_name) {
 		if (load(name)) {
 			if (lista.find(name) != lista.end()) {
 				cout << "jogador " << name << " já existe" << endl;
@@ -102,5 +104,19 @@ namespace persman {
 				jogador_file.close();
 			}
 		}
+	}
+	std::shared_ptr<jogador> &create_jogador(std::shared_ptr<server_client_socket> &cliente) {
+		string iname = "Insert new player name: ", nname;
+		//cliente->clear_msg();
+		cliente->sendtoclient(iname);
+		while (cliente->isempty()) {
+			ISEMPTY_DELAY
+		}
+		nname = cliente->get();
+		cliente->next();
+		std::shared_ptr<jogador>& newjog = new_jogador(cliente->get_token(), nname);
+		newjog->connect(cliente);
+		menu::weapon_chooser(newjog);
+		return newjog;
 	}
 }  // namespace persman

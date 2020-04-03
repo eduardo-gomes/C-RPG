@@ -32,7 +32,7 @@ jogador::~jogador(){
 void jogador::atack_round(){
 	cout << "nobody selected to atack from " << this->get_name() << endl;
 }
-void jogador::atack_round(personagem *toatk){
+void jogador::atack_round(std::shared_ptr<personagem>& toatk){
 	std::string tosend = "atack 1 :";
 	tosend += armas[0]->get_full_name();
 	tosend += " or 2 : ";
@@ -95,7 +95,7 @@ void jogador::heal(){
 	life = life_max;
 }
 
-void jogador::recieve_loot(personagem *j){
+void jogador::recieve_loot(std::shared_ptr<personagem>& j) {
 	xp += j->get_xp_loot();
 	money += j->get_money_loot();
 	stringstream ss;

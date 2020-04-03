@@ -11,47 +11,13 @@ void after_login(string &name, std::shared_ptr<jogador> jog, std::shared_ptr<ser
 	}
 }
 
-bool token_login(std::shared_ptr<server_client_socket> cliente, std::string token){//not reference to client because is other thread
-	bool returnv;
-	//string nname, pass;
-	int auth = 0/*, trys = 3*/;
-	//while(trys--){
-		/*cout << "Insert name : ";
-		cout.flush();
-		cin >> nname;
-		cout << "Insert pass : ";
-		cout.flush();
-		cin >> pass;*/
-		/*string iname = "Insert name : ", ipass = "Insert pass : ";
-		cliente->sendtoclient(iname);
-		//cliente->recvfromclient(10000);
-		while(cliente->isempty()){}
-		nname = cliente->get();
-		cliente->next();
-		cliente->sendtoclient(ipass);
-		//cliente->recvfromclient(10000);
-		while (cliente->isempty()) {
-		}
-		pass = cliente->get();
-		cliente->next();
-		pass = generate_hash(pass);
-		ljogadores.load_if_not_create(nname, pass);*/
-		auth = persman::load(token);
-		if(!auth){
-			string iname = "Insert new name: ", nname;
-			cliente->sendtoclient(iname);
-			//cliente->recvfromclient(10000);
-			while (cliente->isempty()) {}
-			nname = cliente->get();
-			cliente->next();
-			persman::new_jogador(token, nname);
-		}
-		after_login(token, persman::get(token), cliente);
-		cout << "Loging out" << endl;
-		returnv = 1;
-	//}trys end
-	cliente->disconect();
-	return returnv;
+void token_login(std::shared_ptr<server_client_socket> cliente, std::string token){//not reference to client because is other thread
+	if (!persman::load(token)) {//handle nlohmann::detail::out_of_range
+		persman::create_jogador(cliente);
+	}
+	after_login(token, persman::get(token), cliente);
+	cout << "Loging out" << endl;
+	//cliente->disconect();
 }
 /*
 		string dn = "dummy", dps = "edu";

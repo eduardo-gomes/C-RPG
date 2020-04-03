@@ -22,8 +22,8 @@ loot::~loot(){
 
 
 personagem::personagem(){
-	armas[0] = new bow();
-	armas[1] = new sword();
+	//armas[0] = std::shared_ptr<weapon>(new bow()); now the menu take care of this;
+	//armas[1] = std::shared_ptr<weapon>(new sword());
 	colectedxp = xp = 0;
 	level = 1;
 	df_damage = df_critical = df_actionpoints = df_magicalpoints = 10;
@@ -32,15 +32,14 @@ personagem::personagem(){
 }
 personagem::~personagem(){
 	//std::cout << "destroing a1 and a2" << std::endl;
-	delete armas[0];
-	delete armas[1];
+	armas[0].reset();
+	armas[1].reset();
 }
-void personagem::arma_set(weapon *nv, int pos){
+void personagem::arma_set(std::shared_ptr<weapon>& nv, int pos){
 	if(pos > 1 || pos < 0) pos = 1;
-	delete armas[pos];
 	armas[pos] = nv;
 }
-weapon* personagem::get_arma(int pos){
+std::shared_ptr<weapon>& personagem::get_arma(int pos){
 	if (pos > 1 || pos < 0)
 		pos = 0;
 	return armas[pos];
@@ -108,7 +107,7 @@ std::shared_ptr<server_client_socket>& personagem::get_socket() {
 void personagem::set_socket(std::shared_ptr<server_client_socket>& newsocket) {
 	socket = newsocket;
 }
-void personagem::atack(weapon *arma, personagem *j){
+void personagem::atack(std::shared_ptr<weapon>& arma, std::shared_ptr<personagem>& j) {
 	cout << this->get_name() << " atacando : " << j->get_name() << " com : " << arma->get_full_name() << endl;
 	statadd_given_damage(j->recieve_damage_from(arma->get_damage(), this->get_name()));//atack and stat
 	if(!j->is_alive()){

@@ -13,10 +13,11 @@
 #include <chrono>
 #include <thread>
 class server_client_socket;
-bool token_login(std::shared_ptr<server_client_socket>, std::string);
+void token_login(std::shared_ptr<server_client_socket>, std::string);
 class jogador;
 class server_client_socket {
 	private:
+	bool hasdisconected;
 	bool auth;
 	std::string auth_name;
 	static const char msg_break = '\n';
@@ -33,8 +34,9 @@ class server_client_socket {
 	void set_jogador(std::shared_ptr<jogador>& newjog){socket_of_jogador = newjog;}
 	server_client_socket(){
 		buffer[buffer_size] = '\0';
+		hasdisconected = 0;
 	}
-	virtual ssize_t sendtoclient(std::string &str) {
+	virtual ssize_t sendtoclient(const std::string &str) {
 		std::cout << "Socket Out: " << str << std::endl;
 		return send(socket_id, &str[0], str.length(), 0);
 	}
@@ -48,6 +50,12 @@ class server_client_socket {
 	}
 	std::string &get(){
 		return messages.front();
+	}
+	void clear_msg(){
+		messages.clear();
+	}
+	const std::string& get_token(){
+		return auth_name;
 	}
 	long int recvfromclient() {
 		long int val;
@@ -96,8 +104,10 @@ class server_client_socket {
 		return val;
 	}
 	virtual int disconect(){
+		if (hasdisconected) return 0;
 		char eofc = 0x1c;
 		send(socket_id, &eofc, 1, 0);
+		hasdisconected = 1;
 		return shutdown(socket_id, SHUT_RDWR);
 	}
 	void auth_login(std::string &authst, std::shared_ptr<server_client_socket> ptr) {
