@@ -4,29 +4,11 @@ using json = nlohmann::json;
 using namespace std;
 
 void after_login(string &name, std::shared_ptr<jogador> jog, std::shared_ptr<server_client_socket> cliente) {
-	jog->set_socket(cliente);
-	int room_num = -1;
-	string tosend = "Menu Choose an option:\n\t1- Enter room\n You selected (1)\n";
-	cliente->sendtoclient(tosend);
-	while(room_num < 0){
-		string chose = "Enter room number (0000-9999): ", s_num;
-		cliente->sendtoclient(chose);
-		// cout << "Enter room number (0000-9999): ";
-		// cout.flush();
-		// cin >> room_num;
-		//cliente->recvfromclient(0);
-		while (cliente->isempty()) {}
-		room_num = atoi(cliente->get().c_str());
-		cliente->next();
-		if(room_num > 9999 || room_num < 0)
-			room_num = -1;
+	jog->connect(cliente);
+	while(jog->is_connected()){
+		menu::menu(jog);
+		persman::save(name);
 	}
-	//jog->set_server_client_socket(cliente);
-	SALAS::enter_sala_jog(room_num, jog);
-	while(!jog->sala_atual->get_has_ended()){
-		this_thread::sleep_for(chrono::milliseconds(250));
-	}
-	persman::save(name);
 }
 
 bool token_login(std::shared_ptr<server_client_socket> cliente, std::string token){//not reference to client because is other thread

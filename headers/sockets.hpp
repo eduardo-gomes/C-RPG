@@ -5,6 +5,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <csignal>
 #include <string>
 #define PORT 8080
 #define LOGINPORT 1406
@@ -95,7 +96,7 @@ class server_client_socket {
 		return val;
 	}
 	virtual int disconect(){
-		char eofc = 0;
+		char eofc = 0x1c;
 		send(socket_id, &eofc, 1, 0);
 		return shutdown(socket_id, SHUT_RDWR);
 	}
@@ -151,7 +152,14 @@ void try_auth(server_client_socket *auth){
 	if(!auth->isempty()){
 		std::string auth_msg = auth->get();
 		auth->next();
-		auto j = nlohmann::json::parse(auth_msg);
+		using json = nlohmann::json;
+		json j;
+		try{
+		j = nlohmann::json::parse(auth_msg);
+		}
+		catch(nlohmann::detail::parse_error){
+			goto CLOSE;
+		}
 		if(j.is_object()){
 			int sid = atoi(j["socket"].get<std::string>().c_str());
 			std::string token = j["token"].get<std::string>();
@@ -163,6 +171,7 @@ void try_auth(server_client_socket *auth){
 			clientes_mtx.unlock();
 		}else std::cout << "Recived invalid auth_json" << std::endl;
 	}
+	CLOSE:
 	auth->disconect();
 }
 void auth_loop(){
@@ -197,6 +206,7 @@ void new_connection(int socket_id){
 }
 
 void server() {
+	signal(SIGPIPE, SIG_IGN);
 	int server_fd, new_socket, valread = 0;
 	struct sockaddr_in address;
 	int opt = 1;

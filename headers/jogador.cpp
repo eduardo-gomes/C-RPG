@@ -103,3 +103,12 @@ void jogador::recieve_loot(personagem *j){
 	string tosend = ss.str();
 	socket->sendtoclient(tosend);
 }
+void jogador::disconect() {
+	connected = 0;
+	socket->disconect();
+	socket.reset();
+}
+void jogador::connect(std::shared_ptr<server_client_socket> &newsocket) {
+	connected = 1;
+	socket = newsocket;
+}

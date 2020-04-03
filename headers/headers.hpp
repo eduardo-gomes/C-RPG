@@ -23,5 +23,6 @@ class sala;
 //#include "inimigo.hpp"
 #include "inimigo.cpp"
 #include "sala.cpp"
+#include "menu.hpp"
 #include "persman.hpp"
 #include "json_conversions.hpp"

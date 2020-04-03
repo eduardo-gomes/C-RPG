@@ -109,14 +109,14 @@ bool sala::get_has_ended(){
 
 
 
-sala* SALAS::create_sala_bot(int num) {
-	sala *s = get_sala(num);
+std::shared_ptr<sala>& SALAS::create_sala_bot(int num) {
+	std::shared_ptr<sala> &s = get_sala(num);
 	auto temp = std::static_pointer_cast<personagem>(std::shared_ptr<inimigo>(new inimigo()));
 	s->add_personagem(temp);
 	return s;
 }
 void SALAS::enter_sala(int &num, std::shared_ptr<personagem>& pers){
-	sala *s = get_sala(num);
+	std::shared_ptr<sala> &s = get_sala(num);
 	s->add_personagem(pers);
 	/*while(1){
 		if(s->get_num_inside() > 1){
@@ -127,11 +127,11 @@ void SALAS::enter_sala(int &num, std::shared_ptr<personagem>& pers){
 	if ((!s->get_has_started() && !s->get_has_ended()) || s->get_has_ended()) s->start_round();
 	return;
 }
-sala* SALAS::get_sala(int &num) {
+std::shared_ptr<sala>& SALAS::get_sala(int &num) {
 	if (salas_lista.find(num) == salas_lista.end()) {
 		std::string num_s = std::to_string(num);
 		num_s = std::string(4 - num_s.length(), '0').append(num_s);
-		return salas_lista[num] = new sala(num_s);
+		return salas_lista[num] = std::shared_ptr<sala> (new sala(num_s));
 	}
 	return salas_lista.find(num)->second;
 }

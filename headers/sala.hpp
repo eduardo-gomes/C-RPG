@@ -24,9 +24,9 @@ class sala{
 typedef class sala sala;//vscode sala is not a type name
 
 namespace SALAS {
-	std::map<int, sala *> salas_lista;
-	sala *get_sala(int &num);
-	sala *create_sala_bot(int num);
+	std::map<int, std::shared_ptr<sala>> salas_lista;
+	std::shared_ptr<sala> &get_sala(int &num);
+	std::shared_ptr<sala> &create_sala_bot(int num);
 	void enter_sala(int &num, std::shared_ptr<personagem> &pers);
 	void enter_sala_jog(int &num, std::shared_ptr<jogador> &pers){
 		auto copy = std::static_pointer_cast<personagem>(pers);
