@@ -1,4 +1,5 @@
 #include "sala.hpp"
+void to_json(nlohmann::json& j, const sala_round_action& from);
 void sala::add_personagem(std::shared_ptr<personagem>& ps){
 	mtx_to_dentro.lock();
 	to_dentro.push_back(ps);
@@ -11,19 +12,26 @@ void sala::add_personagem(std::shared_ptr<personagem>& ps){
 	sendall(tosend);
 }
 void sala::round_loop(){
-	int cont = 2;
+	int cont = 1;
 	std::string slife = "'s life : ", sturn = "'s turn", tosend, endl = "\n";
-	while(cont){
-		while(dentro.size() < 2){
-			if(!to_dentro.empty()){
-				mtx_to_dentro.lock();
-				for(auto x : to_dentro){
-					dentro.push_back(x);
-				}
-				to_dentro.clear();
-				mtx_to_dentro.unlock();
+	while(dentro.size() < 2 || !to_dentro.empty()){
+		if(!to_dentro.empty()){
+			mtx_to_dentro.lock();
+			for(auto x : to_dentro){
+				dentro.push_back(x);
 			}
+			to_dentro.clear();
+			mtx_to_dentro.unlock();
 		}
+	}
+	nlohmann::json j;
+	to_json(j, get_sala_players());
+	for(unsigned pos = 0; pos < dentro.size(); ++pos){
+		dentro.at(pos)->get_socket()->sendtoclient(get_sala_players_pos(pos, j).dump());
+	}
+	sala_round_action round_action;
+	std::pair<int, int> atack_ret;
+	while(cont){
 		tosend.clear();
 		for(auto x : dentro){
 			tosend += x->get_name();
@@ -43,10 +51,20 @@ void sala::round_loop(){
 			tosend += endl;
 			sendall(tosend);
 			std::cout << tosend;
-			std::shared_ptr<personagem>& recieve = (dentro.back() == (*it)) ? dentro.front(): dentro.back();
+			auto recieve = (dentro.back() == (*it)) ? dentro.begin(): dentro.begin()+1;
 			// TODO ask personagem who wants to atack
-			(*it)->atack_round(recieve);
-			if(!recieve->is_alive()){
+			atack_ret = (*it)->atack_round(*recieve);
+			round_action.action_type = 0;
+			round_action.from = std::distance(dentro.begin(), it);
+			round_action.to = std::distance(dentro.begin(), recieve);
+			round_action.damage = atack_ret.first;
+			round_action.weapon_pos = atack_ret.second;
+			tosend = nlohmann::json(round_action).dump() + '\n'; 
+			sendall(tosend);
+			if(!(*recieve)->is_alive()){
+				tosend = (*recieve)->get_name();
+				tosend += " died\n";
+				sendall(tosend);
 				cont--;
 				break;
 			}
@@ -65,7 +83,7 @@ void sala::round_loop(){
 sala::sala(){
 	//std::string una = "Unammed sala";
 	name = new std::string("Unammed sala");
-	has_ended = 1;
+	//has_ended = 1;
 }
 sala::sala(std::string &n_name) : sala() {
 	name = &n_name;
@@ -103,14 +121,23 @@ bool sala::get_has_ended(){
 	return has_ended;
 }
 
+sala_players sala::get_sala_players(){
+	sala_players sala;
+	sala.dentro = &dentro;
+	return sala;
+}
+nlohmann::json& sala::get_sala_players_pos(unsigned n, nlohmann::json& j){
+	j["your_posi"] = n;
+	return j;
+}
 
 
 
 
 
 
-std::shared_ptr<sala>& SALAS::create_sala_bot(int num) {
-	std::shared_ptr<sala> &s = get_sala(num);
+std::unique_ptr<sala> SALAS::create_sala_bot() {
+	std::unique_ptr<sala> s (new sala());
 	auto temp = std::static_pointer_cast<personagem>(std::shared_ptr<inimigo>(new inimigo()));
 	s->add_personagem(temp);
 	return s;

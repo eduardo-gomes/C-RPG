@@ -49,9 +49,9 @@ class personagem : public loot{
 		virtual void statadd_recieved_damage(int){};
 		virtual void statadd_given_damage(int){};
 		virtual void recieve_loot(std::shared_ptr<personagem>&){};
-		virtual void atack_round() = 0;
-		virtual void atack_round(std::shared_ptr<personagem> &) = 0;
-		void atack(std::shared_ptr<weapon> &arma, std::shared_ptr<personagem> &j);
+		//virtual int atack_round() = 0;
+		virtual std::pair<int, int> atack_round(std::shared_ptr<personagem> &) = 0;
+		int atack(std::shared_ptr<weapon> &arma, std::shared_ptr<personagem> &j);
 		virtual std::string get_name() = 0;
 		int get_life_max() const { return life_max; }
 		int get_df_damage() const { return df_damage; }

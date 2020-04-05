@@ -1,6 +1,8 @@
 #pragma once
 #include "headers.hpp"
-class sala{
+struct sala_players;
+void to_json(nlohmann::json &j, const sala_players &from);
+class sala {
 	private:
 		bool has_ended, has_started;
 		std::string* name;
@@ -20,13 +22,30 @@ class sala{
 		sala(std::string &);
 		int get_num_inside();
 		void start_round();
+		sala_players get_sala_players();
+		nlohmann::json& get_sala_players_pos(unsigned, nlohmann::json&);
 };
-typedef class sala sala;//vscode sala is not a type name
+struct sala_players{
+	std::deque<std::shared_ptr<personagem>> *dentro;
+	unsigned your_pos;
+};
+/*struct sala_player_enter{ //can't enter after the round begin now
+	std::shared_ptr<personagem> entrou;
+	unsigned enter_pos;
+};*/
+struct sala_round{//to be implemented
+	int round_num, now_atack;
+};
+struct sala_round_action{
+	int action_type, damage;
+	unsigned from, to;
+	int weapon_pos;
+};
 
 namespace SALAS {
 	std::map<int, std::shared_ptr<sala>> salas_lista;
 	std::shared_ptr<sala> &get_sala(int &num);
-	std::shared_ptr<sala> &create_sala_bot(int num);
+	std::unique_ptr<sala> create_sala_bot();
 	void enter_sala(int &num, std::shared_ptr<personagem> &pers);
 	void enter_sala_jog(int &num, std::shared_ptr<jogador> &pers){
 		auto copy = std::static_pointer_cast<personagem>(pers);

@@ -29,10 +29,11 @@ jogador::~jogador(){
 	std::cout<< "Jogador destructor" << std::endl;
 }
 
-void jogador::atack_round(){
+/*int jogador::atack_round(){
 	cout << "nobody selected to atack from " << this->get_name() << endl;
-}
-void jogador::atack_round(std::shared_ptr<personagem>& toatk){
+	return 0;
+}*/
+std::pair<int, int> jogador::atack_round(std::shared_ptr<personagem>& toatk){
 	std::string tosend = "atack 1 :";
 	tosend += armas[0]->get_full_name();
 	tosend += " or 2 : ";
@@ -58,11 +59,12 @@ void jogador::atack_round(std::shared_ptr<personagem>& toatk){
 	ss << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << endl;
 	tosend = ss.str();
 	socket->sendtoclient(tosend);
-	this->atack(armas[atack_i], toatk);
+	int damage = this->atack(armas[atack_i], toatk);
 	if(!toatk->is_alive()){
 		enemies_killeds++;
 		enemies_killeds_all++;
 	}
+	return make_pair(damage, atack_i);
 }
 
 std::string jogador::get_name() {

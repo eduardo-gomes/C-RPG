@@ -135,3 +135,24 @@ void from_json(const json& j, jogador* p){
 	j.at("damage_taken_all").get_to(p->damage_taken_all);
 	j.at("enemies_killeds_all").get_to(p->enemies_killeds_all);
 }
+
+void to_json(json& j, const sala_players& from) {
+	j.emplace("your_posi", from.your_pos);
+	json& lista = j["dentro"];
+	for (auto it = from.dentro->begin(); it != from.dentro->end(); ++it) {
+		lista.push_back(it->get());
+	}
+}
+/*void to_json(json& j, const sala_player_enter& from) {
+	j.emplace("enter_posi", from.enter_pos);
+	j.emplace("entrou", from.entrou.get());
+}*/
+void to_json(json& j, const sala_round_action& from){
+	j={
+		{"weapon", from.weapon_pos},
+		{"to", from.to},
+		{"from", from.from},
+		{"damage", from.damage},
+		{"type", from.action_type}
+	};
+}

@@ -107,12 +107,14 @@ std::shared_ptr<server_client_socket>& personagem::get_socket() {
 void personagem::set_socket(std::shared_ptr<server_client_socket>& newsocket) {
 	socket = newsocket;
 }
-void personagem::atack(std::shared_ptr<weapon>& arma, std::shared_ptr<personagem>& j) {
+int personagem::atack(std::shared_ptr<weapon>& arma, std::shared_ptr<personagem>& j) {
 	cout << this->get_name() << " atacando : " << j->get_name() << " com : " << arma->get_full_name() << endl;
-	statadd_given_damage(j->recieve_damage_from(arma->get_damage(), this->get_name()));//atack and stat
+	int damage = j->recieve_damage_from(arma->get_damage(), this->get_name());
+	statadd_given_damage(damage);//atack and stat
 	if(!j->is_alive()){
 		recieve_loot(j);
 	}
+	return damage;
 }
 int personagem::recieve_damage_from(int damage, std::string from){
 	damage = this->sub_life(damage);

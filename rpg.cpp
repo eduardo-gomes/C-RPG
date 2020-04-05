@@ -26,7 +26,7 @@ void token_login(std::shared_ptr<server_client_socket> cliente, std::string toke
 */
 int main(){
 	cout<< __cplusplus << endl;
-	SALAS::create_sala_bot(0);
+	//SALAS::create_sala_bot(0);
 	thread server_thread(server);
 	//thread authsv_thread(auth_server);
 	auth_server();

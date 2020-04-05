@@ -5,7 +5,7 @@ namespace menu {
 	const std::string Options = R"(Menu Choose an option:
 	1- Enter room
 	2- change name
-	3- Boot room (WIP)
+	3- Boot room
 
 	0- Exit
 :)";
@@ -39,6 +39,15 @@ namespace menu {
 			case 2:
 				rename(j);
 				break;
+			case 3:{
+				std::unique_ptr<sala> sala_bot = SALAS::create_sala_bot();
+				auto jper = std::static_pointer_cast<personagem>(j);
+				sala_bot->add_personagem(jper);
+				sala_bot->start_round();
+				while (!sala_bot->get_has_ended()) {
+					this_thread::sleep_for(chrono::milliseconds(250));
+				}
+			}
 			default:
 				break;
 		}  //switch

@@ -19,8 +19,8 @@ class jogador : public personagem{
 		virtual bool is_jogador() { return 1; };
 		std::string get_name();
 		void create_loot();
-		void atack_round();
-		void atack_round(std::shared_ptr<personagem>&);
+		//int atack_round();
+		std::pair<int, int> atack_round(std::shared_ptr<personagem> &);
 		void statadd_recieved_damage(int);
 		void statadd_given_damage(int);
 		void recieve_loot(std::shared_ptr<personagem>&);
