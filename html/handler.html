@@ -1,0 +1,18 @@
+<html>
+
+<body>
+	<script>if (typeof (Storage) !== "undefined") {
+			var url = new URL(location.href);
+			var sid = url.searchParams.get("sid");
+			sessionStorage.setItem('SocketIdStorage', sid);
+			if (sid !== "null") {
+				location.replace('/jogo/auth');
+			};
+		} else {
+			document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+		};
+	</script>
+	<h1>Wait...</h1>
+</body>
+
+</html>

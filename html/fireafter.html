@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Sample FirebaseUI App</title>
+	<!-- *******************************************************************************************
+			 * TODO(DEVELOPER): Paste the initialization snippet from:
+			 * Firebase Console > Overview > Add Firebase to your web app. *
+			 ***************************************************************************************** -->
+	<script src="https://www.gstatic.com/firebasejs/7.13.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/7.13.1/firebase-auth.js"></script>
+	<script>
+		// Your web app's Firebase configuration
+		var firebaseConfig = {
+			apiKey: "AIzaSyAThTbhGU1tKNo1ra9XWVssI1Xcfi8oUQc",
+			authDomain: "cpp-rpg.firebaseapp.com",
+			databaseURL: "https://cpp-rpg.firebaseio.com",
+			projectId: "cpp-rpg",
+			storageBucket: "cpp-rpg.appspot.com",
+			appId: "1:967165441297:web:6d0db8c714803f9e88c8b0",
+			measurementId: "G-V5NKBG5V33"
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+	</script>
+	<script type="text/javascript">
+		function getSocketId() {
+			var socketId = sessionStorage.getItem("SocketIdStorage");
+			document.getElementById("socketid").innerHTML = socketId;
+			return socketId;
+		};
+		initApp = function () {
+			firebase.auth().onAuthStateChanged(function (user) {
+				if (user) {
+					// User is signed in.
+					var displayName = user.displayName;
+					var email = user.email;
+					var emailVerified = user.emailVerified;
+					var photoURL = user.photoURL;
+					var uid = user.uid;
+					var phoneNumber = user.phoneNumber;
+					var providerData = user.providerData;
+					user.getIdToken().then(function (accessToken) {
+						document.getElementById('sign-in-status').textContent = 'Signed in';
+						document.getElementById('sign-in').textContent = 'Sign out';
+						document.getElementById('account-details').textContent = JSON.stringify({
+							displayName: displayName,
+							email: email,
+							emailVerified: emailVerified,
+							phoneNumber: phoneNumber,
+							photoURL: photoURL,
+							uid: uid,
+							accessToken: accessToken,
+							providerData: providerData
+						}, null, '  ');
+					});
+					var msgobj = { socket: getSocketId(), token: uid };
+					location.replace("/jogo/auth/login.php?auth=" + JSON.stringify(msgobj));
+				} else {
+					// User is signed out.
+					document.getElementById('sign-in-status').textContent = 'Signed out';
+					document.getElementById('sign-in').textContent = 'Sign in';
+					document.getElementById('account-details').textContent = 'null';
+				}
+			}, function (error) {
+				console.log(error);
+			});
+		};
+
+		window.addEventListener('load', function () {
+			initApp();
+		});
+	</script>
+</head>
+
+<body>
+	<h1>Welcome to My Awesome App</h1>
+	<div id="sign-in-status"></div>
+	<div id="sign-in"></div>
+	<pre id="account-details"></pre>
+	<div id="socketid"></div>
+</body>
+
+</html>

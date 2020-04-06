@@ -206,7 +206,7 @@ void auth_loop(){
 }
 void new_connection(int socket_id){
 	std::shared_ptr<server_client_socket> novo (new server_client_socket(socket_id));
-	std::string tosend = "To login open:\nhttps://eduardogomes.eng.br/jogo/auth/handler?sid=";
+	std::string tosend = "To login open:\nhttp://localhost:8081/jogo/auth/handler?sid=";
 	tosend += std::to_string(socket_id);
 	tosend += '\n';
 	novo->sendtoclient(tosend);

@@ -82,12 +82,12 @@ namespace menu {
 	void weapon_chooser(std::shared_ptr<jogador>& jog) {
 		const std::shared_ptr<server_client_socket>& cliente = jog->get_socket();
 		cliente->clear_msg();
-		cliente->sendtoclient(weaponschoice);
 		std::shared_ptr<weapon> new_weapon;
 		int pos = 0;
 		int opt;
 		std::string tosend;
 		while (pos <= 1) {
+			cliente->sendtoclient(weaponschoice);
 			while (cliente->isempty()) {
 				ISEMPTY_DELAY
 			}
@@ -97,19 +97,19 @@ namespace menu {
 			switch (opt) {
 				case 1:
 					new_weapon = std::shared_ptr<weapon>(new sword());
-					tosend = "You choose " + new_weapon->get_full_name();
+					tosend = "You choose " + new_weapon->get_full_name() + '\n';
 					break;
 				case 2:
 					new_weapon = std::shared_ptr<weapon>(new bow());
-					tosend = "You choose " + new_weapon->get_full_name();
+					tosend = "You choose " + new_weapon->get_full_name() + '\n';
 					break;
 				case 3:
 					new_weapon = std::shared_ptr<weapon>(new wand());
-					tosend = "You choose " + new_weapon->get_full_name();
+					tosend = "You choose " + new_weapon->get_full_name() + '\n';
 					break;
 				default:
 					new_weapon = std::shared_ptr<weapon>(new sword());
-					tosend = "Default " + new_weapon->get_full_name();
+					tosend = "Default " + new_weapon->get_full_name() + '\n';
 					break;
 			}
 			jog->arma_set(new_weapon, pos++);
