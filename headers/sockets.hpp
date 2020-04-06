@@ -140,8 +140,8 @@ std::map<int, std::shared_ptr<server_client_socket>> clientes;
 std::mutex clientes_mtx;
 
 void recv_loop(){
-	while(1){
-		std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + std::chrono::milliseconds(20);
+	while(continue_running){
+		std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + std::chrono::milliseconds(5);
 		clientes_mtx.lock();
 		for (std::map<int, std::shared_ptr<server_client_socket>>::iterator it = clientes.begin(); it != clientes.end(); ++it) {
 			if((it->second)->recvfromclient() == -2){
@@ -186,7 +186,7 @@ void try_auth(server_client_socket *auth){
 }
 void auth_loop(){
 	int ret;
-	while (1) {
+	while (continue_running) {
 		std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + std::chrono::milliseconds(20);
 		waiting_auth_mtx.lock();
 		for (std::deque<server_client_socket *>::iterator it = waiting_auth.begin(); it != waiting_auth.end(); ++it) {
@@ -215,9 +215,11 @@ void new_connection(int socket_id){
 	clientes_mtx.unlock();
 }
 
+int server_fd_server;
 void server() {
 	signal(SIGPIPE, SIG_IGN);
-	int server_fd, new_socket, valread = 0;
+	int new_socket, valread = 0;
+	server_fd_server = 0;
 	struct sockaddr_in address;
 	int opt = 1;
 	int addrlen = sizeof(address);
@@ -225,13 +227,13 @@ void server() {
 	std::string hello = "Hello from server";
 
 	// Creating socket file descriptor
-	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+	if ((server_fd_server = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
 		perror("socket failed");
 		exit(EXIT_FAILURE);
 	}
 
 	// Forcefully attaching socket to the port 8080
-	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+	if (setsockopt(server_fd_server, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
 		perror("setsockopt");
 		exit(EXIT_FAILURE);
 	}
@@ -240,17 +242,17 @@ void server() {
 	address.sin_port = htons(PORT);
 
 	// Forcefully attaching socket to the port 8080
-	if (bind(server_fd, (struct sockaddr *)&address,
+	if (bind(server_fd_server, (struct sockaddr *)&address,
 			 sizeof(address)) < 0) {
 		perror("bind failed");
 		exit(EXIT_FAILURE);
 	}
-	if (listen(server_fd, 3) < 0) {
+	if (listen(server_fd_server, 3) < 0) {
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
 	std::thread(recv_loop).detach();
-	while ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) > 0){
+	while ((new_socket = accept(server_fd_server, (struct sockaddr *)&address, (socklen_t *)&addrlen)) > 0){
 		new_connection(new_socket);
 		//std::thread(login).detach();
 	}
@@ -263,9 +265,10 @@ void server() {
 	printf("Hello message sent %d\n", valread);
 	return;
 }
-
+int server_fd_auth;
 void auth_server() {
-	int server_fd, new_socket, valread = 0;
+	int new_socket, valread = 0;
+	server_fd_auth = 0;
 	struct sockaddr_in address;
 	int opt = 1;
 	int addrlen = sizeof(address);
@@ -273,13 +276,13 @@ void auth_server() {
 	std::string hello = "Hello from server";
 
 	// Creating socket file descriptor
-	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+	if ((server_fd_auth = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
 		perror("socket failed");
 		exit(EXIT_FAILURE);
 	}
 
 	// Forcefully attaching socket to the port 8080
-	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+	if (setsockopt(server_fd_auth, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
 		perror("setsockopt");
 		exit(EXIT_FAILURE);
 	}
@@ -288,17 +291,17 @@ void auth_server() {
 	address.sin_port = htons(LOGINPORT);
 
 	// Forcefully attaching socket to the port 8080
-	if (bind(server_fd, (struct sockaddr *)&address,
+	if (bind(server_fd_auth, (struct sockaddr *)&address,
 			 sizeof(address)) < 0) {
 		perror("bind failed");
 		exit(EXIT_FAILURE);
 	}
-	if (listen(server_fd, 3) < 0) {
+	if (listen(server_fd_auth, 3) < 0) {
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
 	std::thread(auth_loop).detach();
-	while ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) > 0) {
+	while ((new_socket = accept(server_fd_auth, (struct sockaddr *)&address, (socklen_t *)&addrlen)) > 0) {
 		waiting_auth_mtx.lock();
 		waiting_auth.push_back(new server_client_socket(new_socket));
 		waiting_auth_mtx.unlock();
@@ -312,4 +315,8 @@ void auth_server() {
 	send(new_socket, hello.c_str(), hello.length(), 0);
 	printf("Hello message sent %d\n", valread);
 	return;
+}
+void kill_server_socket(){
+	close(server_fd_auth);
+	close(server_fd_server);
 }

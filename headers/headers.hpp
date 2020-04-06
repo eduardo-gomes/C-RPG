@@ -12,6 +12,7 @@
 std::knuth_b ran_num_gen(140601);
 #include "nlohmann/json.hpp"
 #define ISEMPTY_DELAY std::this_thread::sleep_for(std::chrono::milliseconds(50));
+volatile bool continue_running = 1;
 #include "sockets.hpp"
 //#include "weapon.hpp"
 #include "weapon.cpp"

@@ -41,7 +41,9 @@ std::pair<int, int> jogador::atack_round(std::shared_ptr<personagem>& toatk){
 	tosend += " ?: ";
 	socket->sendtoclient(tosend);
 	std::string atack;
-	while(socket->isempty());
+	while(socket->isempty()){
+		ISEMPTY_DELAY
+	}
 	atack = socket->get();
 	socket->next();
 	int atack_i;
@@ -56,7 +58,7 @@ std::pair<int, int> jogador::atack_round(std::shared_ptr<personagem>& toatk){
 	if(atack_i > 1 || atack_i < 0) atack_i = 0;
 	std::stringstream ss;
 	ss << "you selected: " << atack_i + 1 << " : " << armas[atack_i]->get_full_name() << std::endl;
-	ss << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << endl;
+	ss << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << std::endl;
 	tosend = ss.str();
 	socket->sendtoclient(tosend);
 	int damage = this->atack(armas[atack_i], toatk);
@@ -64,7 +66,7 @@ std::pair<int, int> jogador::atack_round(std::shared_ptr<personagem>& toatk){
 		enemies_killeds++;
 		enemies_killeds_all++;
 	}
-	return make_pair(damage, atack_i);
+	return std::make_pair(damage, atack_i);
 }
 
 std::string jogador::get_name() {
@@ -100,9 +102,9 @@ void jogador::heal(){
 void jogador::recieve_loot(std::shared_ptr<personagem>& j) {
 	xp += j->get_xp_loot();
 	money += j->get_money_loot();
-	stringstream ss;
-	ss << get_name() << " recieved " << j->get_xp_loot() << " xp and $" << j->get_money_loot() << " from " << j->get_name() << "'s loot" << endl;
-	string tosend = ss.str();
+	std::stringstream ss;
+	ss << get_name() << " recieved " << j->get_xp_loot() << " xp and $" << j->get_money_loot() << " from " << j->get_name() << "'s loot" << std::endl;
+	std::string tosend = ss.str();
 	socket->sendtoclient(tosend);
 }
 void jogador::disconect() {

@@ -1,7 +1,6 @@
-#define HASH_SIZE_512
 #include "headers/headers.hpp"
 using json = nlohmann::json;
-using namespace std;
+//using namespace std;
 
 void after_login(string &name, std::shared_ptr<jogador> jog, std::shared_ptr<server_client_socket> cliente) {
 	jog->connect(cliente);
@@ -24,12 +23,20 @@ void token_login(std::shared_ptr<server_client_socket> cliente, std::string toke
 		dps = generate_hash(dps);
 		ljogadores.new_jogador(dn, dps);
 */
+void close_server(int){
+	continue_running = 0;
+	kill_server_socket();
+	std::cout << " Saving all players" << std::endl;
+	persman::save_all();
+	signal(SIGINT, SIG_DFL);
+	raise(SIGINT);
+}
 int main(){
 	cout<< __cplusplus << endl;
-	//SALAS::create_sala_bot(0);
+	signal(SIGINT, close_server);
 	thread server_thread(server);
-	//thread authsv_thread(auth_server);
-	auth_server();
+	thread authsv_thread(auth_server);
+	std::cout << "Press Ctrl+C to close" << std::endl;
+	server_thread.join();
 	//login();
-	persman::save_all();
 }
