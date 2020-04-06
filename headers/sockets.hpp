@@ -9,6 +9,9 @@
 #include <string>
 #define PORT 8080
 #define LOGINPORT 1406
+#ifndef LINK
+#define LINK "http://localhost:8081"
+#endif
 
 #include <chrono>
 #include <thread>
@@ -167,7 +170,7 @@ void try_auth(server_client_socket *auth){
 		try{
 		j = nlohmann::json::parse(auth_msg);
 		}
-		catch(nlohmann::detail::parse_error){
+		catch(const nlohmann::detail::parse_error &){
 			goto CLOSE;
 		}
 		if(j.is_object()){
@@ -206,7 +209,7 @@ void auth_loop(){
 }
 void new_connection(int socket_id){
 	std::shared_ptr<server_client_socket> novo (new server_client_socket(socket_id));
-	std::string tosend = "To login open:\nhttp://localhost:8081/jogo/auth/handler?sid=";
+	std::string tosend = "To login open:\n" LINK "/jogo/auth/handler?sid=";
 	tosend += std::to_string(socket_id);
 	tosend += '\n';
 	novo->sendtoclient(tosend);

@@ -1,3 +1,4 @@
+var WEBPORT = 8081;
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
@@ -65,4 +66,4 @@ http.createServer(function (req, res) {
 			res.writeHead(404, { 'Content-Type': 'text/plain' });
 			res.end('404');
 	}
-}).listen(8081);
+}).listen(WEBPORT);
