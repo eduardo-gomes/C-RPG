@@ -7,8 +7,8 @@ var crypto = require('crypto');
 function call_socket(msg){
 	console.log(msg.socket);
 	console.log(msg.token);
-	if(msg.socket != null){
-		if(msg.token != null){
+	if(msg.socket !== null){
+		if(msg.token !== null){
 			var hash = crypto.createHash('sha256').update(msg.token).digest('base64');
 			msg.token = hash;
 			var msgstr = JSON.stringify(msg);
@@ -20,7 +20,6 @@ function call_socket(msg){
 			});
 			socket.on('error', function(ex){
 				console.log("Socket error");
-				console.log(ex);
 			});
 		}
 	}
