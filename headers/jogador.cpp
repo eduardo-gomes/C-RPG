@@ -23,6 +23,7 @@ jogador::jogador(){
 	life = life_max = 25;
 	sk_life = sk_damage = sk_critcal = sk_actionpoints = sk_magicalpoints = 0;
 	deaths = damage_given_all = damage_taken_all = enemies_killeds_all = damage_given = damage_taken = enemies_killeds = money = 0;
+	connected = 0;
 }
 
 jogador::~jogador(){
@@ -56,11 +57,11 @@ std::pair<int, int> jogador::atack_round(std::shared_ptr<personagem>& toatk){
 		socket->sendtoclient(tosend);
 	}
 	if(atack_i > 1 || atack_i < 0) atack_i = 0;
-	std::stringstream ss;
-	ss << "you selected: " << atack_i + 1 << " : " << armas[atack_i]->get_full_name() << std::endl;
-	ss << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << std::endl;
-	tosend = ss.str();
-	socket->sendtoclient(tosend);
+	//std::stringstream ss;
+	//ss << "you selected: " << atack_i + 1 << " : " << armas[atack_i]->get_full_name() << std::endl;
+	//ss << "damage: " << armas[atack_i]->get_damage() << " precision : " << armas[atack_i]->get_atack_precision() << std::endl;
+	//tosend = ss.str();
+	//socket->sendtoclient(tosend);
 	int damage = this->atack(armas[atack_i], toatk);
 	if(!toatk->is_alive()){
 		enemies_killeds++;

@@ -2,18 +2,47 @@
 
 namespace menu {
 	const int Options_count = 4;
-	const std::string Options = R"(Menu Choose an option:
-	1- Enter room
-	2- change name
-	3- Boot room
-
-	0- Exit
-:)";
-	const std::string weaponschoice = R"(Choose two weapons:[1]
-	1- Sword
-	2- Bow
-	3- Wand
-:)";
+	const std::string Options = (R"(
+	{
+		"choosenum":{
+			"n": 1,
+			"st": 0,
+			"text": "Menu Choose an option:",
+			"opts":[
+				"Exit",
+				"Enter room",
+				"change name",
+				"Boot room"
+			]
+		}
+	}
+)"_json.dump());
+	const std::string weaponschoice = (R"(
+	{
+		"choosenum":{
+			"n": 2,
+			"st": 1,
+			"text": "Choose two weapons:",
+			"opts":[
+				"Sword",
+				"Bow",
+				"Wand"
+			]
+		}
+	}
+)"_json.dump());
+	const std::string chooseName = (R"(
+	{
+		"choosestr":{
+			"text": "New Player name:"
+		}
+	}
+)"_json.dump());
+	const nlohmann::json weaponChoosed = R"(
+	{
+		"chooseresp": null
+	}
+)"_json;
 	void choose(int opt, std::shared_ptr<jogador>& j) {
 		int room_num = -1;
 		switch (opt) {
@@ -69,9 +98,9 @@ namespace menu {
 	}
 	void rename(std::shared_ptr<jogador>& jog) {
 		const std::shared_ptr<server_client_socket>& cliente = jog->get_socket();
-		string iname = "Insert new player name: ", nname;
+		std::string nname;
 		//cliente->clear_msg();
-		cliente->sendtoclient(iname);
+		cliente->sendtoclient(chooseName);
 		while (cliente->isempty()) {
 			ISEMPTY_DELAY
 		}
@@ -113,7 +142,9 @@ namespace menu {
 					break;
 			}
 			jog->arma_set(new_weapon, pos++);
-			cliente->sendtoclient(tosend);
+			nlohmann::json resp = (weaponChoosed);
+			resp["chooseresp"] = tosend;
+			cliente->sendtoclient(resp.dump());
 		}
 	}
 }  // namespace menu

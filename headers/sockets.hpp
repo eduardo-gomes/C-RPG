@@ -126,7 +126,7 @@ class server_client_socket {
 		//proc = std::thread(login, this);
 	}
 	virtual ~server_client_socket(){
-		proc.~thread();
+		//proc.~thread();
 		std::string goodbye = "Closing connection";
 		sendtoclient(goodbye);
 		close(socket_id);

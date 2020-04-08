@@ -2,7 +2,7 @@
 using json = nlohmann::json;
 //using namespace std;
 
-void after_login(string &name, std::shared_ptr<jogador> jog, std::shared_ptr<server_client_socket> cliente) {
+void after_login(std::string &name, std::shared_ptr<jogador> jog, std::shared_ptr<server_client_socket> cliente) {
 	jog->connect(cliente);
 	while(jog->is_connected()){
 		menu::menu(jog);
