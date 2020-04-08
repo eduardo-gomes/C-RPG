@@ -11,6 +11,7 @@ hash, store and compare
 maybe salt
 */
 using namespace std;
+namespace CPP_RPG::Server {
 struct NotFindAfterLoad : public std::exception {
 	const char *what() const throw() {
 		return "Cant Find after load";
@@ -18,7 +19,7 @@ struct NotFindAfterLoad : public std::exception {
 };
 //string hash_to_char(string &hash);
 //bool comp_hash(string &a, string &b);
-namespace menu{
+namespace menu {
 	void weapon_chooser(std::shared_ptr<jogador> &jog);
 }
 namespace persman {
@@ -32,7 +33,7 @@ namespace persman {
 			fname += name;
 			fname += ".json";
 			jogador_file.open(fname, ifstream::in);
-			std::shared_ptr<jogador> jog (new jogador());
+			std::shared_ptr<jogador> jog(new jogador());
 			if (jogador_file.good()) {
 				/*std::string content((std::istreambuf_iterator<char>(jogador_file)),
 										(std::istreambuf_iterator<char>()));*/
@@ -47,7 +48,7 @@ namespace persman {
 		}
 		return status;
 	}
-	std::shared_ptr<jogador>& get(string &name) {
+	std::shared_ptr<jogador> &get(string &name) {
 		std::map<string, std::shared_ptr<jogador>>::iterator it = lista.find(name);
 		if (it == lista.end()) {
 			bool isloaded = load(name);
@@ -63,7 +64,7 @@ namespace persman {
 		}
 		return it->second;
 	}
-	std::shared_ptr<jogador>& new_jogador(const string &name, string &jogador_name) {
+	std::shared_ptr<jogador> &new_jogador(const string &name, string &jogador_name) {
 		if (load(name)) {
 			if (lista.find(name) != lista.end()) {
 				cout << "jogador " << name << " já existe" << endl;
@@ -71,7 +72,7 @@ namespace persman {
 				return lista[name];
 			}
 		}
-		lista[name] = std::shared_ptr<jogador> (new jogador(jogador_name));
+		lista[name] = std::shared_ptr<jogador>(new jogador(jogador_name));
 		return lista[name];
 	}
 	void save(string &name) {
@@ -114,9 +115,10 @@ namespace persman {
 		}
 		nname = cliente->get();
 		cliente->next();
-		std::shared_ptr<jogador>& newjog = new_jogador(cliente->get_token(), nname);
+		std::shared_ptr<jogador> &newjog = new_jogador(cliente->get_token(), nname);
 		newjog->connect(cliente);
 		menu::weapon_chooser(newjog);
 		return newjog;
 	}
 }  // namespace persman
+}  // namespace CPP_RPG::Server

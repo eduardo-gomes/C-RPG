@@ -15,6 +15,7 @@
 
 #include <chrono>
 #include <thread>
+namespace CPP_RPG::Server {
 class server_client_socket;
 void token_login(std::shared_ptr<server_client_socket>, std::string);
 class jogador;
@@ -25,17 +26,18 @@ class server_client_socket {
 	std::string auth_name;
 	static const char msg_break = '\n';
 	static const unsigned int buffer_size = 1024;
-	char buffer[buffer_size+1];
+	char buffer[buffer_size + 1];
 	std::thread proc;
 	std::shared_ptr<jogador> socket_of_jogador;
+
 	public:
 	std::deque<std::string> messages;
 	std::string readed;
 	long unsigned int readedindex = 0;
 	int socket_id;
-	std::shared_ptr<jogador>& get_jogador(){return socket_of_jogador;}
-	void set_jogador(std::shared_ptr<jogador>& newjog){socket_of_jogador = newjog;}
-	server_client_socket(){
+	std::shared_ptr<jogador> &get_jogador() { return socket_of_jogador; }
+	void set_jogador(std::shared_ptr<jogador> &newjog) { socket_of_jogador = newjog; }
+	server_client_socket() {
 		buffer[buffer_size] = '\0';
 		hasdisconected = 0;
 	}
@@ -43,21 +45,21 @@ class server_client_socket {
 		std::cout << "Socket Out: " << str << std::endl;
 		return send(socket_id, &str[0], str.length(), 0);
 	}
-	int next(){
-		if(messages.empty()) return -1;
+	int next() {
+		if (messages.empty()) return -1;
 		messages.pop_front();
 		return 0;
 	}
-	bool isempty(){
+	bool isempty() {
 		return messages.empty();
 	}
-	std::string &get(){
+	std::string &get() {
 		return messages.front();
 	}
-	void clear_msg(){
+	void clear_msg() {
 		messages.clear();
 	}
-	const std::string& get_token(){
+	const std::string &get_token() {
 		return auth_name;
 	}
 	long int recvfromclient() {
@@ -65,18 +67,18 @@ class server_client_socket {
 		//memset(buffer, -1, 1024);
 		val = read(socket_id, buffer, 1024);
 		if (val == -1) {
-			if(errno == EAGAIN) return 0;
-			if(errno == ECONNRESET) return -2;
+			if (errno == EAGAIN) return 0;
+			if (errno == ECONNRESET) return -2;
 			perror("socket error");
 			return -1;
 		} else {
 			/* readedindex = 0;
 			readed.clear(); */
-			buffer[val] = '\0';//packet end
+			buffer[val] = '\0';	 //packet end
 			long unsigned int msg_sz;
 			char *find = strchr(buffer, msg_break);
-			char* next = buffer;
-			while (find <= &buffer[val] && find != NULL){
+			char *next = buffer;
+			while (find <= &buffer[val] && find != NULL) {
 				msg_sz = (unsigned long)(find - next);
 				//if (readed.capacity() < readedindex + msg_sz) readed.reserve(readedindex + msg_sz + 100);
 				//memcpy(&readed[readedindex], next, msg_sz);
@@ -86,10 +88,10 @@ class server_client_socket {
 				readedindex = 0;
 				readed.clear();
 				//if (readed.capacity() < readedindex + msg_sz) readed.reserve(readedindex + msg_sz + 100);
-				next = find +1;
+				next = find + 1;
 				find = strchr(next, msg_break);
 				msg_sz = (unsigned long)(find - next);
-				if(find == NULL){
+				if (find == NULL) {
 					msg_sz = strlen(next);
 				}
 				//memcpy(&readed[readedindex], next, msg_sz);
@@ -106,7 +108,7 @@ class server_client_socket {
 		}
 		return val;
 	}
-	virtual int disconect(){
+	virtual int disconect() {
 		if (hasdisconected) return 0;
 		char eofc = 0x1c;
 		send(socket_id, &eofc, 1, 0);
@@ -118,40 +120,40 @@ class server_client_socket {
 		auth_name = authst;
 		proc = std::thread(token_login, ptr, authst);
 	}
-	server_client_socket(int socket): server_client_socket() {
+	server_client_socket(int socket) : server_client_socket() {
 		auth = 0;
 		socket_id = socket;
 		int iMode = 1;
-		ioctl(socket_id, FIONBIO, &iMode);  //non-blocking
-		//proc = std::thread(login, this);
+		ioctl(socket_id, FIONBIO, &iMode);	//non-blocking
+											//proc = std::thread(login, this);
 	}
-	virtual ~server_client_socket(){
+	virtual ~server_client_socket() {
 		//proc.~thread();
 		std::string goodbye = "Closing connection";
 		sendtoclient(goodbye);
 		close(socket_id);
 	}
 };
-class server_client_null: public server_client_socket{
-	ssize_t sendtoclient(std::string &){return 0;}
-	int disconect(){return 0;}
+class server_client_null : public server_client_socket {
+	ssize_t sendtoclient(std::string &) { return 0; }
+	int disconect() { return 0; }
 	//recv
 };
 server_client_null NULL_CLIENT_NULL;
-std::shared_ptr<server_client_socket> NULL_CLIENT ((server_client_socket *)(&NULL_CLIENT_NULL));
+std::shared_ptr<server_client_socket> NULL_CLIENT((server_client_socket *)(&NULL_CLIENT_NULL));
 std::map<int, std::shared_ptr<server_client_socket>> clientes;
 std::mutex clientes_mtx;
 
-void recv_loop(){
-	while(continue_running){
+void recv_loop() {
+	while (continue_running) {
 		std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + std::chrono::milliseconds(5);
 		clientes_mtx.lock();
 		for (std::map<int, std::shared_ptr<server_client_socket>>::iterator it = clientes.begin(); it != clientes.end(); ++it) {
-			if((it->second)->recvfromclient() == -2){
+			if ((it->second)->recvfromclient() == -2) {
 				it->second->~server_client_socket();
 				it = clientes.erase(it);
-				if(it == clientes.end()) break;
-				if(it != clientes.begin()) --it;//no problem if it jump the new first
+				if (it == clientes.end()) break;
+				if (it != clientes.begin()) --it;  //no problem if it jump the new first
 			}
 		}
 		clientes_mtx.unlock();
@@ -161,42 +163,43 @@ void recv_loop(){
 
 std::deque<server_client_socket *> waiting_auth;
 std::mutex waiting_auth_mtx;
-void try_auth(server_client_socket *auth){
-	if(!auth->isempty()){
+void try_auth(server_client_socket *auth) {
+	if (!auth->isempty()) {
 		std::string auth_msg = auth->get();
 		auth->next();
 		using json = nlohmann::json;
 		json j;
-		try{
-		j = nlohmann::json::parse(auth_msg);
-		}
-		catch(const nlohmann::detail::parse_error &){
+		try {
+			j = nlohmann::json::parse(auth_msg);
+		} catch (const nlohmann::detail::parse_error &) {
 			goto CLOSE;
 		}
-		if(j.is_object()){
+		if (j.is_object()) {
 			int sid = atoi(j["socket"].get<std::string>().c_str());
 			std::string token = j["token"].get<std::string>();
 			clientes_mtx.lock();
 			auto iter = clientes.find(sid);
-			if(iter != clientes.end()){
+			if (iter != clientes.end()) {
 				iter->second->auth_login(token, iter->second);
-			}else std::cout << "Recived invalid sid" << std::endl;
+			} else
+				std::cout << "Recived invalid sid" << std::endl;
 			clientes_mtx.unlock();
-		}else std::cout << "Recived invalid auth_json" << std::endl;
+		} else
+			std::cout << "Recived invalid auth_json" << std::endl;
 	}
-	CLOSE:
+CLOSE:
 	auth->disconect();
 }
-void auth_loop(){
+void auth_loop() {
 	int ret;
 	while (continue_running) {
 		std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + std::chrono::milliseconds(20);
 		waiting_auth_mtx.lock();
 		for (std::deque<server_client_socket *>::iterator it = waiting_auth.begin(); it != waiting_auth.end(); ++it) {
 			ret = (*it)->recvfromclient();
-			if(ret > 0){
+			if (ret > 0) {
 				try_auth(*it);
-			}else if (ret == -2) {
+			} else if (ret == -2) {
 				(*it)->~server_client_socket();
 				it = waiting_auth.erase(it);
 				if (it == waiting_auth.end()) break;
@@ -207,8 +210,8 @@ void auth_loop(){
 		std::this_thread::sleep_until(tp);
 	}
 }
-void new_connection(int socket_id){
-	std::shared_ptr<server_client_socket> novo (new server_client_socket(socket_id));
+void new_connection(int socket_id) {
+	std::shared_ptr<server_client_socket> novo(new server_client_socket(socket_id));
 	std::string tosend = "To login open:\n" LINK "/jogo/auth/handler?sid=";
 	tosend += std::to_string(socket_id);
 	tosend += '\n';
@@ -255,7 +258,7 @@ void server() {
 		exit(EXIT_FAILURE);
 	}
 	std::thread(recv_loop).detach();
-	while ((new_socket = accept(server_fd_server, (struct sockaddr *)&address, (socklen_t *)&addrlen)) > 0){
+	while ((new_socket = accept(server_fd_server, (struct sockaddr *)&address, (socklen_t *)&addrlen)) > 0) {
 		new_connection(new_socket);
 		//std::thread(login).detach();
 	}
@@ -319,7 +322,8 @@ void auth_server() {
 	printf("Hello message sent %d\n", valread);
 	return;
 }
-void kill_server_socket(){
+void kill_server_socket() {
 	close(server_fd_auth);
 	close(server_fd_server);
 }
+}  // namespace CPP_RPG::Server

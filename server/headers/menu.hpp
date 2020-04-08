@@ -1,4 +1,5 @@
 #include "headers.hpp"
+namespace CPP_RPG::Server {
 
 namespace menu {
 	const int Options_count = 4;
@@ -68,7 +69,7 @@ namespace menu {
 			case 2:
 				rename(j);
 				break;
-			case 3:{
+			case 3: {
 				std::unique_ptr<sala> sala_bot = SALAS::create_sala_bot();
 				auto jper = std::static_pointer_cast<personagem>(j);
 				sala_bot->add_personagem(jper);
@@ -148,3 +149,4 @@ namespace menu {
 		}
 	}
 }  // namespace menu
+}  // namespace CPP_RPG::Server

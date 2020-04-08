@@ -4,44 +4,39 @@ TODO: inimigo, sala and test
 #pragma once
 #include "headers.hpp"
 using json = nlohmann::json;
-void to_json(json& j, const loot *p){
+namespace CPP_RPG::Server {
+void to_json(json& j, const loot* p) {
 	j = {
-		{"loot",{
-			{"noloot", p->noloot},
-			{"xp", p->xp},
-			{"money", p->money}
-		}}
-	};
+		{"loot", {{"noloot", p->noloot}, {"xp", p->xp}, {"money", p->money}}}};
 }
-void from_json(const json& j, loot *p){
+void from_json(const json& j, loot* p) {
 	j.at("loot").at("noloot").get_to(p->noloot);
 	j.at("loot").at("xp").get_to(p->xp);
 	j.at("loot").at("money").get_to(p->money);
 }
 
-void to_json(json &j, const weapon *p){
+void to_json(json& j, const weapon* p) {
 	j = {
 		{"tipo", p->get_tipo()},
-		{"material",p->material},
-		{"xp",p->xp},
-		{"damage_df",p->damage_df},
-		{"damage_buff",p->damage_buff},
-		{"precision",p->precision},
-		{"precision_buff",p->precision_buff}
-	};
+		{"material", p->material},
+		{"xp", p->xp},
+		{"damage_df", p->damage_df},
+		{"damage_buff", p->damage_buff},
+		{"precision", p->precision},
+		{"precision_buff", p->precision_buff}};
 }
-void from_json(const json &j, std::shared_ptr<weapon>&p){
-	auto &tipo = j.at("tipo");
+void from_json(const json& j, std::shared_ptr<weapon>& p) {
+	auto& tipo = j.at("tipo");
 	int tipon;
-	if(tipo.is_number_integer())
+	if (tipo.is_number_integer())
 		tipo.get_to(tipon);
-	else{
+	else {
 		std::string temp;
 		tipo.get_to(temp);
 		cout << "WARNING: weapon tipo json read as string" << endl;
 		tipon = atoi(temp.c_str());
 	}
-	switch (tipon){
+	switch (tipon) {
 		case weapon_T::SWORD:
 			p = std::shared_ptr<weapon>(new sword());
 			break;
@@ -63,29 +58,26 @@ void from_json(const json &j, std::shared_ptr<weapon>&p){
 	j.at("precision_buff").get_to(p->precision_buff);
 }
 
-void to_json(json& j, const personagem *p){
+void to_json(json& j, const personagem* p) {
 	json j_loot, arma0, arma1;
 	to_json(arma0, p->armas[0].get());
 	to_json(arma1, p->armas[1].get());
 	to_json(j_loot, (const loot*)p);
 	j = {
-			{"colectedxp", p->get_all_xp()},
-			{"xp", p->get_xp()},
-			{"level", p->get_level()},
-			{"life_max", p->get_life_max()},
-			{"life", p->get_life()},
-			{"df_damage", p->get_df_damage()},
-			{"df_critical", p->get_df_critical()},
-			{"df_actionpoints", p->get_df_actionpoints()},
-			{"df_magicalpoints", p->get_df_magicalpoints()},
-			{"weapon",{
-				arma0, arma1
-			}}
-		};
+		{"colectedxp", p->get_all_xp()},
+		{"xp", p->get_xp()},
+		{"level", p->get_level()},
+		{"life_max", p->get_life_max()},
+		{"life", p->get_life()},
+		{"df_damage", p->get_df_damage()},
+		{"df_critical", p->get_df_critical()},
+		{"df_actionpoints", p->get_df_actionpoints()},
+		{"df_magicalpoints", p->get_df_magicalpoints()},
+		{"weapon", {arma0, arma1}}};
 	j.merge_patch(j_loot);
 }
-void from_json(const json &j, personagem *p){
-	from_json(j, (loot*) p);
+void from_json(const json& j, personagem* p) {
+	from_json(j, (loot*)p);
 	j.at("colectedxp").get_to(p->colectedxp);
 	j.at("xp").get_to(p->xp);
 	j.at("level").get_to(p->level);
@@ -99,7 +91,7 @@ void from_json(const json &j, personagem *p){
 	from_json(j.at("weapon").at(1), p->armas[1]);
 }
 
-void to_json(json& j, const jogador* p){
+void to_json(json& j, const jogador* p) {
 	json j_pers;
 	to_json(j_pers, (const personagem*)p);
 	j = {
@@ -115,11 +107,10 @@ void to_json(json& j, const jogador* p){
 		{"enemies_killeds", p->enemies_killeds},
 		{"damage_given_all", p->damage_given_all},
 		{"damage_taken_all", p->damage_taken_all},
-		{"enemies_killeds_all", p->enemies_killeds_all}
-		};
+		{"enemies_killeds_all", p->enemies_killeds_all}};
 	j.merge_patch(j_pers);
 }
-void from_json(const json& j, jogador* p){
+void from_json(const json& j, jogador* p) {
 	from_json(j, (personagem*)p);
 	j.at("name").get_to(p->name);
 	j.at("money").get_to(p->money);
@@ -147,12 +138,12 @@ void to_json(json& j, const sala_players& from) {
 	j.emplace("enter_posi", from.enter_pos);
 	j.emplace("entrou", from.entrou.get());
 }*/
-void to_json(json& j, const sala_round_action& from){
-	j={
+void to_json(json& j, const sala_round_action& from) {
+	j = {
 		{"weapon", from.weapon_pos},
 		{"to", from.to},
 		{"from", from.from},
 		{"damage", from.damage},
-		{"type", from.action_type}
-	};
+		{"type", from.action_type}};
 }
+}  // namespace CPP_RPG::Server
