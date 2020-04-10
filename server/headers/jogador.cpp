@@ -36,13 +36,22 @@ jogador::~jogador() {
 	cout << "nobody selected to atack from " << this->get_name() << endl;
 	return 0;
 }*/
+const std::string chooseweaponatack = (R"(
+	{
+		"chooseweap":{
+			"n": 1,
+			"st": 0,
+			"text": "Choose an weapon:"
+		}
+	}
+)"_json.dump());
 std::pair<int, int> jogador::atack_round(std::shared_ptr<personagem>& toatk) {
-	std::string tosend = "atack 1 :";
+	std::string tosend/* = "atack 1 :";
 	tosend += armas[0]->get_full_name();
 	tosend += " or 2 : ";
 	tosend += armas[1]->get_full_name();
-	tosend += " ?: ";
-	socket->sendtoclient(tosend);
+	tosend += " ?: "*/;
+	socket->sendtoclient(chooseweaponatack);
 	std::string atack;
 	while (socket->isempty()) {
 		ISEMPTY_DELAY
@@ -54,8 +63,7 @@ std::pair<int, int> jogador::atack_round(std::shared_ptr<personagem>& toatk) {
 		atack_i = stoi(atack) - 1;
 	} catch (std::invalid_argument& e) {
 		atack_i = 0;
-		tosend = "invalid argument\n";
-		socket->sendtoclient(tosend);
+		socket->sendtoclient("{\"invopt\":\"invalid argument\"}");
 	}
 	if (atack_i > 1 || atack_i < 0) atack_i = 0;
 	//std::stringstream ss;

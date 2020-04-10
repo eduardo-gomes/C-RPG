@@ -14,7 +14,7 @@ void sala::add_personagem(std::shared_ptr<personagem>& ps) {
 }
 void sala::round_loop() {
 	int cont = 1;
-	std::string slife = "'s life : ", sturn = "'s turn", tosend, endl = "\n";
+	std::string /*slife = "'s life : ", sturn = "'s turn",*/ tosend, endl = "\n";
 	while (dentro.size() < 2 || !to_dentro.empty()) {
 		if (!to_dentro.empty()) {
 			mtx_to_dentro.lock();
@@ -33,26 +33,31 @@ void sala::round_loop() {
 	sala_round_action round_action;
 	std::pair<int, int> atack_ret;
 	while (cont) {
-		tosend.clear();
-		for (auto x : dentro) {
-			tosend += x->get_name();
-			tosend += slife;
-			tosend += std::to_string(x->get_life());
-			tosend += "\t\t";
-			/*std::cout << tosend;
-			sendall(tosend);*/
-		}
-		tosend += '\n';
-		sendall(tosend);
-		std::cout << tosend;
-		for (auto it = dentro.begin(); it != dentro.end(); ++it) {
-			tosend = endl;
-			tosend += (*it)->get_name();
-			tosend += sturn;
-			tosend += endl;
+		// tosend.clear();
+		// for (auto x : dentro) {
+		// 	tosend += x->get_name();
+		// 	tosend += slife;
+		// 	tosend += std::to_string(x->get_life());
+		// 	tosend += "\t\t";
+		// 	/*std::cout << tosend;
+		// 	sendall(tosend);*/
+		// }
+		// tosend += '\n';
+		// sendall(tosend);
+		// std::cout << tosend;
+		for (unsigned pos = 0; pos < dentro.size(); ++pos) {
+			// tosend = endl;
+			// tosend += (*it)->get_name();
+			// tosend += sturn;
+			// tosend += endl;
+			// sendall(tosend);
+			// std::cout << tosend;
+			nlohmann::json nowatack;
+			nowatack["turn"] = pos;
+			tosend = nowatack.dump() + endl;
 			sendall(tosend);
-			std::cout << tosend;
-			auto recieve = (dentro.back() == (*it)) ? dentro.begin() : dentro.begin() + 1;
+			auto it = !pos ? dentro.begin() : dentro.begin() + 1;
+			auto recieve = pos ? dentro.begin() : dentro.begin() + 1;
 			// TODO ask personagem who wants to atack
 			atack_ret = (*it)->atack_round(*recieve);
 			round_action.action_type = 0;
@@ -70,11 +75,11 @@ void sala::round_loop() {
 				break;
 			}
 		}
-		tosend = "Round end\n";
+		tosend = "{\"control\":\"r end\"}\n";
 		sendall(tosend);
 		std::cout << tosend;
 	}
-	tosend = "Battle end";
+	tosend = "{\"control\":\"b end\"}\n";
 	tosend += endl;
 	sendall(tosend);
 	std::cout << tosend;

@@ -127,19 +127,19 @@ namespace menu {
 			switch (opt) {
 				case 1:
 					new_weapon = std::shared_ptr<weapon>(new sword());
-					tosend = "You choose " + new_weapon->get_full_name() + '\n';
+					tosend = "You choose " + new_weapon->get_full_name();
 					break;
 				case 2:
 					new_weapon = std::shared_ptr<weapon>(new bow());
-					tosend = "You choose " + new_weapon->get_full_name() + '\n';
+					tosend = "You choose " + new_weapon->get_full_name();
 					break;
 				case 3:
 					new_weapon = std::shared_ptr<weapon>(new wand());
-					tosend = "You choose " + new_weapon->get_full_name() + '\n';
+					tosend = "You choose " + new_weapon->get_full_name();
 					break;
 				default:
 					new_weapon = std::shared_ptr<weapon>(new sword());
-					tosend = "Default " + new_weapon->get_full_name() + '\n';
+					tosend = "Default " + new_weapon->get_full_name();
 					break;
 			}
 			jog->arma_set(new_weapon, pos++);
