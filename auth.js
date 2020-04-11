@@ -16,7 +16,7 @@ function call_socket(msg){
 				port: 1406,
 				host: 'localhost',
 			}, function(){
-				socket.end(msgstr + '\n');
+				socket.end(msgstr + '\003');
 			});
 			socket.on('error', function(ex){
 				console.log("Socket error");
@@ -62,7 +62,7 @@ http.createServer(function (req, res) {
 			call_socket(JSON.parse(url_parse.query.auth));
 			break;
 		default:
-			res.writeHead(404, { 'Content-Type': 'text/plain' });
-			res.end('404');
+			res.writeHead(404, 'Not Found');
+			res.end();
 	}
 }).listen(WEBPORT);

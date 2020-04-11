@@ -13,9 +13,12 @@ ifdef LINK
 CXXFLAGS+= -DLINK=$(LINK)
 endif
 
+client: client/client.cpp client/sockets.hpp
+	$(CXX) client/client.cpp -o client.exe $(CXXFLAGS) -g -Og
 debug: $(DEPS)
 	$(CXX) $(SFILE) -o $(SOUT) $(CXXFLAGS) -g -Og
 O3: $(DEPS)
 	$(CXX) $(SFILE) -o $(SOUT) $(CXXFLAGS) -O3 -g
 release: $(DEPS)
 	$(CXX) $(SFILE) -o $(SOUT) $(CXXFLAGS) -O3
+all: client debug
