@@ -5,6 +5,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
 #include <csignal>
 #include <string>
 #define PORT 8080
@@ -24,7 +25,7 @@ class server_client_socket {
 	bool hasdisconected;
 	bool auth;
 	std::string auth_name;
-	static const char msg_break = '\n';
+	static const char msg_break = '\003';
 	static const unsigned int buffer_size = 1024;
 	char buffer[buffer_size + 1];
 	std::thread proc;
@@ -41,9 +42,16 @@ class server_client_socket {
 		buffer[buffer_size] = '\0';
 		hasdisconected = 0;
 	}
-	virtual ssize_t sendtoclient(const std::string &str) {
+	virtual ssize_t sendtoclient(std::string &str) {
 		std::cout << "Socket Out: " << str << std::endl;
+		str += '\003';
 		return send(socket_id, &str[0], str.length(), 0);
+	}
+	ssize_t sendtoclient(const std::string &str) {
+		std::cout << "Socket Out: " << str << std::endl;
+		std::string temp = str;
+		temp += '\003';
+		return send(socket_id, &temp[0], temp.length(), 0);
 	}
 	int next() {
 		if (messages.empty()) return -1;
@@ -95,8 +103,8 @@ class server_client_socket {
 					msg_sz = strlen(next);
 				}
 				//memcpy(&readed[readedindex], next, msg_sz);
-				readed.append(next, msg_sz);
-				readedindex += msg_sz;
+				/*readed.append(next, msg_sz);
+				readedindex += msg_sz;*/
 			}
 			if (!(find <= &buffer[val])) {
 				msg_sz = (long unsigned)val;
@@ -212,9 +220,9 @@ void auth_loop() {
 }
 void new_connection(int socket_id) {
 	std::shared_ptr<server_client_socket> novo(new server_client_socket(socket_id));
-	std::string tosend = "To login open:\n" LINK "/jogo/auth/handler?sid=";
+	std::string tosend = "{\"wlogin\":\"" LINK "/jogo/auth/handler?sid=";
 	tosend += std::to_string(socket_id);
-	tosend += '\n';
+	tosend += "\"}";
 	novo->sendtoclient(tosend);
 	clientes_mtx.lock();
 	clientes.insert(std::make_pair(socket_id, novo));
